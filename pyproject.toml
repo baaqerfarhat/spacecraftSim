@@ -1,0 +1,57 @@
+[build-system]
+requires = ["maturin>=1.7,<2"]
+build-backend = "maturin"
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
+module-name = "space_robotics_bench._rs"
+manifest-path = "crates/space_robotics_bench_py/Cargo.toml"
+
+[tool.pytest.ini_options]
+env = ["SRB_SKIP_REGISTRATION=true"]
+
+[project]
+name = "space_robotics_bench"
+description = "Comprehensive benchmark for space robotics"
+authors = [{ name = "Andrej Orsula", email = "orsula.andrej@gmail.com" }]
+maintainers = [{ name = "Andrej Orsula", email = "orsula.andrej@gmail.com" }]
+urls = { Repository = "https://github.com/AndrejOrsula/space_robotics_bench", Documentation = "https://AndrejOrsula.github.io/space_robotics_bench" }
+classifiers = [
+  "Programming Language :: Python",
+  "Programming Language :: Rust",
+  "License :: OSI Approved :: MIT License",
+  "License :: OSI Approved :: Apache Software License",
+  "Framework :: Robot Framework",
+]
+keywords = ["benchmark", "robotics", "simulation", "space"]
+readme = "README.md"
+license = { text = "MIT OR Apache-2.0" }
+requires-python = ">=3.10"
+dynamic = ["version"]
+dependencies = ["platformdirs>=4.2,<5", "pydantic>=2.7,<3"]
+
+[project.optional-dependencies]
+all = [
+  ## Algorithms
+  "space_robotics_bench[dreamerv3]",
+  "space_robotics_bench[robomimic]",
+  "space_robotics_bench[sb3]",
+  ## Hardware
+  "space_robotics_bench[spacemouse]",
+  ## Utils
+  "space_robotics_bench[rich]",
+  "space_robotics_bench[tests]",
+]
+## Algorithms
+dreamerv3 = [
+  "dreamerv3@git+https://github.com/AndrejOrsula/dreamerv3.git@58bd8ff875077a859b68f9ad94d89129d4f8dd68",
+]
+robomimic = [
+  "robomimic@git+https://github.com/ARISE-Initiative/robomimic.git@29d6ca229dec3327f87b54cf1688a94177f92af6",
+]
+sb3 = ["stable-baselines3>=2.3,<3", "sb3-contrib>=2.3,<3"]
+## Hardware
+spacemouse = ["pyspacemouse>=1.1,<2"]
+## Utils
+rich = ["rich>=13.9,<14"]
+tests = ["pytest>=8.2,<9", "pytest-env>=1.1,<2"]
