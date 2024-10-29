@@ -6,6 +6,7 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" &>/dev/null && pwd)"
 REPOSITORY_DIR="$(dirname "${SCRIPT_DIR}")"
 WS_DIR="$(dirname "${REPOSITORY_DIR}")"
+export WITH_DEV_VOLUME="${WITH_DEV_VOLUME:-true}"
 
 ## Config
 # Development volumes to mount inside the container
@@ -20,7 +21,7 @@ DOCKER_DEV_ENVIRON=(
 
 ## Run the container with development volumes
 DOCKER_DEV_CMD=(
-    WITH_DEV_VOLUME=true "${SCRIPT_DIR}/run.bash"
+    "${SCRIPT_DIR}/run.bash"
     "${DOCKER_DEV_VOLUMES[@]/#/"-v "}"
     "${DOCKER_DEV_ENVIRON[@]/#/"-e "}"
     "${*:1}"
