@@ -7,7 +7,7 @@ from omni.isaac.lab.utils import configclass
 from pxr import Usd
 
 import space_robotics_bench.core.sim as sim_utils
-from space_robotics_bench.paths import SRB_SCRIPTS_DIR
+from space_robotics_bench.paths import SRB_ASSETS_DIR_SRB
 
 from . import impl
 
@@ -58,7 +58,9 @@ class BlenderNodesAssetCfg(ProceduralAssetCfg):
         "--python-exit-code",
         "1",
     ]
-    bpy_script: str = path.join(SRB_SCRIPTS_DIR, "blender", "procgen_assets.py")
+    bpy_script: str = path.join(
+        SRB_ASSETS_DIR_SRB, "scripts", "blender", "procgen_assets.py"
+    )
 
     # Output
     name: str = MISSING
@@ -76,6 +78,7 @@ class BlenderNodesAssetCfg(ProceduralAssetCfg):
     # Material
     material: Optional[str] = None
     texture_resolution: int = 1024
+    render_samples: int = 4
     detail: float = 1.0
 
     # Prim

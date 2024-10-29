@@ -18,7 +18,7 @@ class LunarRockProcgenCfg(sim_utils.BlenderNodesAssetCfg):
     # Geometry
     geometry_nodes: Dict[str, Dict[str, Any]] = {
         "LunarRock": {
-            "detail": 5,  # Level of the subdivision (resolution of the mesh)
+            "detail": 4,  # Level of the subdivision (resolution of the mesh)
             "scale": [0.1, 0.1, 0.075],  # Metric scale of the mesh
             "scale_std": [0.01, 0.01, 0.005],  # Standard deviation of the scale
             "horizontal_cut": False,  # Flag to enable horizontal cut

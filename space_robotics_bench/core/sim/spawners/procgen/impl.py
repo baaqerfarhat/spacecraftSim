@@ -26,10 +26,12 @@ def spawn_blender_procgen_assets(
     if cfg.detail == 0:
         cfg.material = None
         cfg.texture_resolution = 0
+        cfg.render_samples = 0
     else:
         cfg.texture_resolution = max(16, math.ceil(cfg.detail * cfg.texture_resolution))
         if cfg.texture_resolution % 2 != 0:
             cfg.texture_resolution += 1
+        cfg.render_samples = max(1, math.ceil(cfg.detail * cfg.render_samples))
 
     # Extract configuration into script kwargs
     script_kwargs = {
@@ -45,6 +47,7 @@ def spawn_blender_procgen_assets(
         "decimate_face_count": cfg.decimate_face_count,
         "material": cfg.material,
         "texture_resolution": cfg.texture_resolution,
+        "render_samples": cfg.render_samples,
     }
 
     # Derive the output directory based on the configuration
