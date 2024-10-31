@@ -61,29 +61,24 @@ ngx.enabled = true
 omni.replicator.asyncRendering = false
 renderer.active = "rtx"
 renderer.enabled = "rtx"
-renderer.multiGpu.autoEnable = false
 renderer.multiGpu.enabled = false
 renderer.multiGpu.maxGpuCount = 1
-rtx-transient.dlssg.enabled = false
+rtx-transient.dlssg.enabled = true
 rtx-transient.resourcemanager.enableTextureStreaming = true
+rtx.ambientOcclusion.enabled = false
+rtx.directLighting.sampledLighting.samplesPerPixel = 1
+rtx.ecoMode.enabled = true
+rtx.ecoMode.maxFramesWithoutChange = 5
 rtx.hydra.enableSemanticSchema = true
 rtx.indirectDiffuse.enabled = false
 rtx.mdltranslator.mdlDistilling = false
 rtx.newDenoiser.enabled = false
 rtx.pathtracing.optixDenoiser.enabled = false
+rtx.post.aa.op = 3 # 3 (DLSS) | 4 (DLAA)
 rtx.post.dlss.execMode = 0 # 0 (Performance) | 1 (Balanced) | 2 (Quality) | 3 (Auto)
-rtx.post.histogram.enabled = true # Auto exposure
 rtx.raytracing.fractionalCutoutOpacity = false
-rtx.raytracing.subsurface.denoiser.enabled = false
-rtx.reflections.enabled = false
-rtx.sceneDb.ambientLightIntensity = 1.0
-rtx.transient.dlssg.enabled = false
-rtx.translucency.enabled = true
-rtx.translucency.worldEps = 0.005
-
-# Note: Sampled lighting works better for static scenes
-rtx.directLighting.sampledLighting.enabled = false
-rtx.directLighting.sampledLighting.samplesPerPixel = 1
+rtx.realtime.mgpu.enabled = false
+rtx.sceneDb.ambientLightIntensity = 0.0
 
 ## Physics
 physics.autoPopupSimulationOutputWindow = false
