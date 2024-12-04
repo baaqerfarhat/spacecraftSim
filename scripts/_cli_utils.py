@@ -20,18 +20,21 @@ def add_default_cli_args(parser: argparse.Namespace):
         description="Arguments for environment.",
     )
     environment_group.add_argument(
+        "-t",
         "--task",
-        "--demo",
+        "-e",
         "--env",
+        "--demo",
         type=str,
         default="srb/sample_collection",
         action=_AutoNamespaceTaskAction,
-        help="Name of the task/demo/env. You can run the `list_envs.py` script to get a list of all registered tasks.",
+        help="Name of the task/demo/env. You can run the `list_envs.py` script to get a list of all registered tasks/demos/envs.",
     )
     environment_group.add_argument(
         "--seed", type=int, default=None, help="Seed used for the environment"
     )
     environment_group.add_argument(
+        "-n",
         "--num_envs",
         type=int,
         default=1,
@@ -108,7 +111,7 @@ def shutdown_app(launcher: AppLauncher):
 
 
 def _update_extension_module():
-    if environ.get("SRB_SKIP_EXT_MOD_UPDATE", "false").lower() not in ["true", "1"]:
+    if environ.get("SRB_UPDATE_EXTENSION_MODULE", "false").lower() in ["true", "1"]:
         print("Updating Rust extension module...")
         result = subprocess.run(
             [

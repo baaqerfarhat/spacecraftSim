@@ -9,9 +9,7 @@ EXTRA_DOCKER_VOLUMES=(
     "${HOME}/Videos:/root/Videos"
 )
 # Additional environment variables to set inside the container
-EXTRA_DOCKER_ENVIRON=(
-    SRB_SKIP_EXT_MOD_UPDATE="1"
-)
+EXTRA_DOCKER_ENVIRON=()
 
 ## Parse arguments
 DEFAULT_CMD="cargo run --release --package space_robotics_bench_gui"

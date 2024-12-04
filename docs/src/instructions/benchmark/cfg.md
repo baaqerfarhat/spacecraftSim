@@ -37,7 +37,7 @@ Values from the configuration file can be overridden using environment variables
 The following arguments are common across all entrypoint scripts, e.g. [`teleop.py`](https://github.com/AndrejOrsula/space_robotics_bench/blob/main/scripts/teleop.py), [`random_agent.py`](https://github.com/AndrejOrsula/space_robotics_bench/blob/main/scripts/random_agent.py) and [`ros2.py`](https://github.com/AndrejOrsula/space_robotics_bench/blob/main/scripts/ros2.py):
 
 - `-h`, `--help`: Display the help message and exit.
-- `--task TASK`, `--demo TASK`, `--env TASK`: Specify the name of the task or environment. You can list available tasks using `list_envs.py`.
+- `-t TASK`, `--task TASK`, `-e ENV`, `--env ENV`, `--demo DEMO`: Specify the name of the environment (task/demo). You can list available tasks using `list_envs.py`.
 - `--num_envs NUM_ENVS`: Number of parallel environments to simulate.
 - `--disable_ui`: Disable the majority of the Isaac Sim UI.
 - `--headless`: Force the display to remain off, making the simulation headless.
@@ -46,6 +46,6 @@ The following arguments are common across all entrypoint scripts, e.g. [`teleop.
 ## Additional Environment Variables
 
 - `SRB_SKIP_REGISTRATION` (default: `false`): When set to `"true"`|`1`, automatic registering of environments with the Gymnasium registry is disabled. This can be useful in specific deployment or testing scenarios.
-- `SRB_SKIP_EXT_MOD_UPDATE` (default: `false`): When set to `"true"`|`1`, the Rust extension module will not be automatically recompiled on startup of Python entrypoint scripts. By default, this ensures that the extension module is always up-to-date with the source code. Skipping this step can be useful when the extension module never changes to reduce startup time slightly.
+- `SRB_UPDATE_EXTENSION_MODULE` (default: `false`): When set to `"true"`|`1`, the Rust extension module will be automatically recompiled on startup of Python entrypoint scripts. By default, this ensures that the extension module is always up-to-date with the source code. Skipping this step can be useful when the extension module never changes to reduce startup time slightly.
 - `SRB_WITH_TRACEBACK` (default: `false`): When set to `"true"`|`1`, rich traceback information is displayed for exceptions. This can be useful for debugging.
   - `SRB_WITH_TRACEBACK_LOCALS` (default: `false`): When set to `"true"`|`1` and `SRB_WITH_TRACEBACK` is enabled, local variables are included in the traceback information. This can be useful for debugging, but it can also be overwhelming in some cases.

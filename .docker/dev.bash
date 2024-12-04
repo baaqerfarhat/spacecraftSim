@@ -16,6 +16,7 @@ DOCKER_DEV_VOLUMES=(
 )
 # Development environment variables to set inside the container
 DOCKER_DEV_ENVIRON=(
+    SRB_UPDATE_EXTENSION_MODULE="${SRB_UPDATE_EXTENSION_MODULE:-true}"
     SRB_WITH_TRACEBACK="${SRB_WITH_TRACEBACK:-true}"
 )
 
