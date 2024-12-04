@@ -66,13 +66,22 @@ DOCKER_ENVIRON=(
 )
 
 ## DDS config
-if [ -n "${CYCLONEDDS_URI}" ]; then
-    DOCKER_VOLUMES+=("${CYCLONEDDS_URI//file:\/\//}:/root/.ros/cyclonedds.xml:ro")
-    DOCKER_ENVIRON+=("CYCLONEDDS_URI=file:///root/.ros/cyclonedds.xml")
-fi
-if [ -n "${FASTRTPS_DEFAULT_PROFILES_FILE}" ]; then
-    DOCKER_VOLUMES+=("${FASTRTPS_DEFAULT_PROFILES_FILE}:/root/.ros/fastrtps.xml:ro")
-    DOCKER_ENVIRON+=("FASTRTPS_DEFAULT_PROFILES_FILE=/root/.ros/fastrtps.xml")
+if [[ "${RMW_IMPLEMENTATION:-"rmw_cyclonedds_cpp"}" = "rmw_cyclonedds_cpp" ]]; then
+    if [ -n "${CYCLONEDDS_URI}" ]; then
+        if [[ "${CYCLONEDDS_URI}" =~ ^file://.* ]]; then
+            DOCKER_VOLUMES+=("${CYCLONEDDS_URI//file:\/\//}:/root/.ros/cyclonedds.xml:ro")
+            DOCKER_ENVIRON+=("CYCLONEDDS_URI=file:///root/.ros/cyclonedds.xml")
+        else
+            DOCKER_ENVIRON+=("CYCLONEDDS_URI=${CYCLONEDDS_URI}")
+        fi
+    elif [[ "${ROS_LOCALHOST_ONLY}" = "0" ]]; then
+        DOCKER_ENVIRON+=("CYCLONEDDS_URI=<CycloneDDS><Domain><General><RedundantNetworking>true</RedundantNetworking><AllowMulticast>true</AllowMulticast></General><Discovery><ParticipantIndex>none</ParticipantIndex></Discovery></Domain></CycloneDDS>")
+    fi
+elif [[ "${RMW_IMPLEMENTATION}" = "rmw_fastrtps_cpp" ]]; then
+    if [ -n "${FASTRTPS_DEFAULT_PROFILES_FILE}" ]; then
+        DOCKER_VOLUMES+=("${FASTRTPS_DEFAULT_PROFILES_FILE}:/root/.ros/fastrtps.xml:ro")
+        DOCKER_ENVIRON+=("FASTRTPS_DEFAULT_PROFILES_FILE=/root/.ros/fastrtps.xml")
+    fi
 fi
 
 ## Determine the name of the image to run
