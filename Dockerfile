@@ -111,10 +111,12 @@ RUN echo -e "\n# Rust ${RUST_VERSION}" >> /entrypoint.bash && \
     echo "export PYO3_PYTHON=\"${ISAAC_SIM_PYTHON}\"" >> /entrypoint.bash && \
     curl --proto "=https" --tlsv1.2 -sSfL "https://sh.rustup.rs" | sh -s -- --no-modify-path -y --default-toolchain "${RUST_VERSION}" --profile default
 
-## Install ROS
+## Install (Space) ROS
+ARG INSTALL_SPACEROS=false
 ARG ROS_DISTRO="humble"
 # hadolint ignore=SC1091,DL3008
-RUN curl --proto "=https" --tlsv1.2 -sSfL "https://raw.githubusercontent.com/ros/rosdistro/master/ros.key" -o /usr/share/keyrings/ros-archive-keyring.gpg && \
+RUN if [[ "${INSTALL_SPACEROS,,}" != true ]]; then \
+    curl --proto "=https" --tlsv1.2 -sSfL "https://raw.githubusercontent.com/ros/rosdistro/master/ros.key" -o /usr/share/keyrings/ros-archive-keyring.gpg && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(source /etc/os-release && echo "${UBUNTU_CODENAME}") main" > /etc/apt/sources.list.d/ros2.list && \
     apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
@@ -125,7 +127,54 @@ RUN curl --proto "=https" --tlsv1.2 -sSfL "https://raw.githubusercontent.com/ros
     "${ISAAC_SIM_PYTHON}" -m pip install --no-input --no-cache-dir catkin_pkg && \
     rosdep init --rosdistro "${ROS_DISTRO}" && \
     echo -e "\n# ROS ${ROS_DISTRO^}" >> /entrypoint.bash && \
-    echo "source \"/opt/ros/${ROS_DISTRO}/setup.bash\" --" >> /entrypoint.bash
+    echo "source \"/opt/ros/${ROS_DISTRO}/setup.bash\" --" >> /entrypoint.bash ; \
+    fi
+ARG SPACEROS_TAG="${ROS_DISTRO}-2024.10.0"
+# hadolint ignore=SC1091,DL3003,DL3008
+RUN if [[ "${INSTALL_SPACEROS,,}" = true ]]; then \
+    curl --proto "=https" --tlsv1.2 -sSfL "https://raw.githubusercontent.com/ros/rosdistro/master/ros.key" -o /usr/share/keyrings/ros-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(source /etc/os-release && echo "${UBUNTU_CODENAME}") main" > /etc/apt/sources.list.d/ros2.list && \
+    apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -yq --no-install-recommends \
+    clang-14 \
+    cmake \
+    g++ \
+    gcc \
+    libboost-dev \
+    libboost-filesystem-dev \
+    libboost-test-dev \
+    libboost-thread-dev \
+    libedit-dev \
+    libgmp-dev \
+    libsqlite3-dev \
+    libtbb-dev \
+    libz-dev \
+    llvm-14 \
+    llvm-14-dev \
+    llvm-14-tools \
+    ros-dev-tools && \
+    rm -rf /var/lib/apt/lists/* && \
+    "${ISAAC_SIM_PYTHON}" -m pip install --no-input --no-cache-dir catkin_pkg rosinstall_generator && \
+    rosdep init --rosdistro "${ROS_DISTRO}" && \
+    SPACEROS_DIR="/opt/spaceros" && \
+    SPACEROS_SRC_DIR="${SPACEROS_DIR}/src" && \
+    SPACEROS_INSTALL_DIR="${SPACEROS_DIR}/install" && \
+    SPACEROS_LOG_DIR="${SPACEROS_DIR}/log" && \
+    mkdir -p "${SPACEROS_SRC_DIR}" && \
+    vcs import --shallow --recursive --force --input "https://raw.githubusercontent.com/space-ros/space-ros/refs/tags/${SPACEROS_TAG}/ros2.repos" "${SPACEROS_SRC_DIR}" && \
+    vcs import --shallow --recursive --force --input "https://raw.githubusercontent.com/space-ros/space-ros/refs/tags/${SPACEROS_TAG}/ikos.repos" "${SPACEROS_SRC_DIR}" && \
+    vcs import --shallow --recursive --force --input "https://raw.githubusercontent.com/space-ros/space-ros/refs/tags/${SPACEROS_TAG}/spaceros.repos" "${SPACEROS_SRC_DIR}" && \
+    apt-get update && \
+    rosdep update --rosdistro "${ROS_DISTRO}" && \
+    DEBIAN_FRONTEND=noninteractive rosdep install --default-yes --ignore-src -r --rosdistro "${ROS_DISTRO}" --from-paths "${SPACEROS_SRC_DIR}" --skip-keys "$(curl --proto =https --tlsv1.2 -sSfL https://raw.githubusercontent.com/space-ros/space-ros/refs/tags/${SPACEROS_TAG}/excluded-pkgs.txt | tr '\n' ' ') urdfdom_headers ikos" && \
+    rm -rf /var/lib/apt/lists/* /root/.ros/rosdep/sources.cache && \
+    cd "${SPACEROS_DIR}" && \
+    colcon build --cmake-args -DPython3_EXECUTABLE="${ISAAC_SIM_PYTHON}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DLLVM_CONFIG_EXECUTABLE="/usr/lib/llvm-14/bin/llvm-config" --no-warn-unused-cli && \
+    cd - && \
+    rm -rf "${SPACEROS_LOG_DIR}" && \
+    echo -e "\n# Space ROS ${ROS_DISTRO^}" >> /entrypoint.bash && \
+    echo "source \"${SPACEROS_INSTALL_DIR}/setup.bash\" --" >> /entrypoint.bash ; \
+    fi
 
 ## Install Blender
 ARG BLENDER_PATH="/root/blender"

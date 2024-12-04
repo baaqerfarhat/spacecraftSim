@@ -2,6 +2,8 @@
 
 Environments of the Space Robotics Bench can be integrated with ROS 2 to enable control of the robots and data collection over the middleware communication.
 
+> **Note:** If you wish to use Space ROS inside the container instead of regular ROS 2, you can build the image using the `--build-arg INSTALL_SPACEROS=true` build argument. This option is generally not recommended as there is little benefit to using Space ROS on the simulation side, but it is available for experimentation.
+
 ## Single Environment
 
 The [`ros2.py`](https://github.com/AndrejOrsula/space_robotics_bench/blob/main/scripts/ros2.py) script is the primary entry point for interfacing with the environments through ROS 2. This script spawns a single ROS node that maps inputs and outputs for the environment and provides miscellaneous functionalities such as resetting the simulation. Here is an example using the Ingenuity demo:
