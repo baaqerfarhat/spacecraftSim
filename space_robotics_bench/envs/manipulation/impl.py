@@ -1,7 +1,4 @@
-from omni.isaac.lab.sensors import ContactSensor
-from omni.isaac.lab.sensors.frame_transformer.frame_transformer_cfg import (
-    FrameTransformer,
-)
+from omni.isaac.lab.sensors import ContactSensor, FrameTransformer
 
 from space_robotics_bench.core.assets import Articulation
 from space_robotics_bench.core.envs import BaseEnv

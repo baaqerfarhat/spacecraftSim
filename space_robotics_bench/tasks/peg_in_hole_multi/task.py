@@ -1,5 +1,5 @@
 from dataclasses import MISSING as DELAYED_CFG
-from typing import Dict, List, Optional, Sequence, Tuple
+from typing import Dict, List, Sequence, Tuple
 
 import torch
 from omni.isaac.core.prims.xform_prim_view import XFormPrimView
@@ -392,7 +392,7 @@ def _compute_intermediate_state(
         joint_pos_normalized[:, robot_hand_joint_indices],
     )
 
-    # End-effector pose (position and '6D' rotation)
+    # End-effector '6D' rotation
     robot_ee_rotmat_wrt_base = math_utils.matrix_from_quat(robot_ee_quat_wrt_base)
 
     # Transformation | Object origin -> Object CoM

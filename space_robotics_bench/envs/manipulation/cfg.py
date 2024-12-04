@@ -87,6 +87,9 @@ class BaseManipulationEnvCfg(BaseEnvCfg):
             gpu_collision_stack_size=2 ** (26 - 3),
             gpu_max_num_partitions=8,
         ),
+        render=sim_utils.RenderCfg(
+            enable_reflections=True,
+        ),
         physics_material=sim_utils.RigidBodyMaterialCfg(
             static_friction=1.0,
             dynamic_friction=1.0,

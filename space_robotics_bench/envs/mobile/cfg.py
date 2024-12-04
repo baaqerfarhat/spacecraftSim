@@ -14,7 +14,7 @@ from space_robotics_bench.core.sim import SimulationCfg
 
 
 @configclass
-class BaseAerialRoboticsEnvEventCfg:
+class BaseMobileRoboticsEnvEventCfg:
     ## Default scene reset
     reset_all = EventTermCfg(func=mdp.reset_scene_to_default, mode="reset")
 
@@ -36,19 +36,6 @@ class BaseAerialRoboticsEnvEventCfg:
             },
         },
     )
-    # reset_rand_light_rot = EventTermCfg(
-    #     func=mdp.follow_xform_orientation_linear_trajectory,
-    #     mode="interval",
-    #     interval_range_s=(0.1, 0.1),
-    #     is_global_time=True,
-    #     params={
-    #         "asset_cfg": SceneEntityCfg("light"),
-    #         "orientation_step_params": {
-    #             "roll": 0.25 * torch.pi / 180.0,
-    #             "pitch": 0.5 * torch.pi / 180.0,
-    #         },
-    #     },
-    # )
 
     ## Robot
     reset_rand_robot_state = EventTermCfg(
@@ -57,9 +44,6 @@ class BaseAerialRoboticsEnvEventCfg:
         params={
             "asset_cfg": SceneEntityCfg("robot"),
             "pose_range": {
-                "x": (-5.0, 5.0),
-                "y": (-5.0, 5.0),
-                "z": (10.0, 10.0),
                 "yaw": (
                     -torch.pi,
                     torch.pi,
@@ -71,10 +55,10 @@ class BaseAerialRoboticsEnvEventCfg:
 
 
 @configclass
-class BaseAerialRoboticsEnvCfg(BaseEnvCfg):
+class BaseMobileRoboticsEnvCfg(BaseEnvCfg):
     ## Environment
     episode_length_s: float = 50.0
-    env_rate: float = 1.0 / 50.0
+    env_rate: float = 1.0 / 100.0
 
     ## Agent
     agent_rate: float = 1.0 / 50.0
@@ -86,7 +70,7 @@ class BaseAerialRoboticsEnvCfg(BaseEnvCfg):
             enable_ccd=False,
             enable_stabilization=False,
             bounce_threshold_velocity=0.0,
-            friction_correlation_distance=0.02,
+            friction_correlation_distance=0.01,
             min_velocity_iteration_count=1,
             # GPU settings
             gpu_temp_buffer_capacity=2 ** (24 - 5),
@@ -101,6 +85,10 @@ class BaseAerialRoboticsEnvCfg(BaseEnvCfg):
             gpu_collision_stack_size=2 ** (26 - 4),
             gpu_max_num_partitions=8,
         ),
+        render=sim_utils.RenderCfg(
+            enable_reflections=True,
+            enable_translucency=True,
+        ),
         physics_material=sim_utils.RigidBodyMaterialCfg(
             static_friction=1.0,
             dynamic_friction=1.0,
@@ -112,17 +100,17 @@ class BaseAerialRoboticsEnvCfg(BaseEnvCfg):
 
     ## Viewer
     viewer = ViewerCfg(
-        lookat=(0.0, 0.0, 10.0),
-        eye=(-10.0, 0.0, 20.0),
+        lookat=(0.0, 0.0, 0.0),
+        eye=(-7.5, 0.0, 10.0),
         origin_type="env",
         env_index=0,
     )
 
     ## Scene
-    scene = InteractiveSceneCfg(num_envs=1, env_spacing=97.0, replicate_physics=False)
+    scene = InteractiveSceneCfg(num_envs=1, env_spacing=65.0, replicate_physics=False)
 
     ## Events
-    events = BaseAerialRoboticsEnvEventCfg()
+    events = BaseMobileRoboticsEnvEventCfg()
 
     def __post_init__(self):
         super().__post_init__()
@@ -156,11 +144,12 @@ class BaseAerialRoboticsEnvCfg(BaseEnvCfg):
             num_assets=self.scene.num_envs,
             size=(self.scene.env_spacing - 1,) * 2,
             procgen_kwargs={
-                "density": 0.24,
-                "texture_resolution": 6144,
+                "density": 0.16,
+                "flat_area_size": 4.0,
+                "texture_resolution": 4096,
             },
         )
-        self.robot_cfg = assets.aerial_robot_from_env_cfg(self.env_cfg)
+        self.robot_cfg = assets.rover_from_env_cfg(self.env_cfg)
         self.scene.robot = self.robot_cfg.asset_cfg
 
         ## Actions

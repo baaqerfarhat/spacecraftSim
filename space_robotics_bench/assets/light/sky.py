@@ -19,6 +19,9 @@ def sky_from_env_cfg(
 ) -> Optional[AssetBaseCfg]:
     texture_file: Optional[str] = None
 
+    # Enable rendering effects
+    rtx_settings.auto_exposure()
+
     match env_cfg.scenario:
         case env_utils.Scenario.EARTH:
             texture_file = (
