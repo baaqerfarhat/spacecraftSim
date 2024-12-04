@@ -864,7 +864,7 @@ impl App {
                             };
 
                             ui.add(
-                                egui::Label::new(egui::RichText::new(&format!("\t1) Grasp the {sample_type}sample.\n\t2) [Optional] Place it in the rover cargo bay.")).monospace()).selectable(false)
+                                egui::Label::new(egui::RichText::new(format!("\t1) Grasp the {sample_type}sample.\n\t2) [Optional] Place it in the rover cargo bay.")).monospace()).selectable(false)
                             );
                         }
                         crate::config::Task::DebrisCapture => {

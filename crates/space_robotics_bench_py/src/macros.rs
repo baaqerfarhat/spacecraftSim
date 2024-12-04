@@ -20,7 +20,7 @@ macro_rules! python_add_submodule {
     ($parent_module:ident, $module:ident) => {{
         let py = $parent_module.py();
         $parent_module.add_submodule(&$module)?;
-        py.import_bound(::pyo3::intern!(py, "sys"))?
+        py.import(::pyo3::intern!(py, "sys"))?
             .getattr(::pyo3::intern!(py, "modules"))?
             .set_item($crate::macros::python_module_name_full!(), $module)
     }};

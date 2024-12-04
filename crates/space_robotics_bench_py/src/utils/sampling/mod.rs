@@ -5,7 +5,7 @@ use space_robotics_bench::utils::sampling::{
 };
 
 pub(crate) fn register(parent: &Bound<'_, PyModule>) -> PyResult<()> {
-    let m = PyModule::new_bound(parent.py(), crate::macros::python_module_name!())?;
+    let m = PyModule::new(parent.py(), crate::macros::python_module_name!())?;
 
     m.add_function(wrap_pyfunction!(sample_poisson_disk_2d, &m)?)?;
     m.add_function(wrap_pyfunction!(sample_poisson_disk_2d_looped, &m)?)?;

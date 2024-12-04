@@ -1,5 +1,6 @@
 from os import path
 
+import gymnasium
 from omni.isaac.lab.envs import DirectRLEnvCfg
 from omni.isaac.lab.utils import configclass
 
@@ -29,3 +30,8 @@ class BaseEnvCfg(DirectRLEnvCfg):
     ## Misc
     # Flag that disables the timeout for the environment
     enable_truncation: bool = True
+
+    ## Ugly hack to gain compatibility with new Isaac Lab
+    # TODO: Fix in a better way
+    action_space = gymnasium.spaces.Box(low=-1.0, high=1.0, shape=(1,))
+    observation_space = gymnasium.spaces.Box(low=-1.0, high=1.0, shape=(1,))

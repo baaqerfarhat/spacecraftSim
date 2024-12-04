@@ -34,7 +34,7 @@ RUN sed -i 's|$SCRIPT_DIR/../../../$LD_LIBRARY_PATH:||' "${ISAAC_SIM_PATH}/setup
     sed -i 's|$SCRIPT_DIR/../../../$PYTHONPATH:||' "${ISAAC_SIM_PATH}/setup_python_env.sh"
 
 ## Optimization: Build Python to improve the runtime performance of training
-ARG PYTHON_VERSION="3.10.14"
+ARG PYTHON_VERSION="3.10.15"
 ENV PYTHONEXE="/usr/local/bin/python${PYTHON_VERSION%%.*}"
 # hadolint ignore=DL3003,DL3008
 RUN PYTHON_DL_PATH="/tmp/Python-${PYTHON_VERSION}.tar.xz" && \
@@ -66,6 +66,7 @@ RUN PYTHON_DL_PATH="/tmp/Python-${PYTHON_VERSION}.tar.xz" && \
     "${PYTHON_SRC_DIR}/configure" --enable-shared --enable-optimizations --with-lto --prefix="/usr/local" && \
     make -j "$(nproc)" && \
     make install && \
+    ln -sr "${PYTHONEXE}" /usr/local/bin/python && \
     cd - && \
     rm -rf "${PYTHON_SRC_DIR}"
 ## Fix `PYTHONEXE` by disabling the append of "isaac-sim/kit/kernel/plugins" to `LD_LIBRARY_PATH` inside `isaac-sim/setup_python_env.sh`
@@ -102,7 +103,7 @@ RUN apt-get update && \
 RUN "${ISAAC_SIM_PYTHON}" -m pip install --no-input --no-cache-dir --upgrade pip
 
 ## Install Rust
-ARG RUST_VERSION="1.80"
+ARG RUST_VERSION="1.83"
 RUN echo -e "\n# Rust ${RUST_VERSION}" >> /entrypoint.bash && \
     echo "export PATH=\"${HOME}/.cargo/bin\${PATH:+:\${PATH}}\"" >> /entrypoint.bash && \
     echo "export CARGO_TARGET_DIR=\"${HOME}/.cargo/target\"" >> /entrypoint.bash && \
@@ -178,7 +179,7 @@ RUN if [[ "${INSTALL_SPACEROS,,}" = true ]]; then \
 
 ## Install Blender
 ARG BLENDER_PATH="/root/blender"
-ARG BLENDER_VERSION="4.2.2"
+ARG BLENDER_VERSION="4.3.0"
 # hadolint ignore=SC2016
 RUN echo -e "\n# Blender ${BLENDER_VERSION}" >> /entrypoint.bash && \
     echo "export PATH=\"${BLENDER_PATH}\${PATH:+:\${PATH}}\"" >> /entrypoint.bash && \
@@ -191,7 +192,7 @@ RUN echo -e "\n# Blender ${BLENDER_VERSION}" >> /entrypoint.bash && \
 ARG ISAACLAB_PATH="/root/isaaclab"
 ARG ISAACLAB_REMOTE="https://github.com/isaac-sim/IsaacLab.git"
 ARG ISAACLAB_BRANCH="main"
-ARG ISAACLAB_COMMIT_SHA="0ef582badf6f257bb3c320c63d5d6d899604a138" # Oct 5, 2024
+ARG ISAACLAB_COMMIT_SHA="efc1a0b26eea0483a69f9519699ae3e58527cc1b" # 2024-12-04
 # hadolint ignore=SC2044
 RUN echo -e "\n# Isaac Lab ${ISAACLAB_COMMIT_SHA}" >> /entrypoint.bash && \
     echo "export ISAACLAB_PATH=\"${ISAACLAB_PATH}\"" >> /entrypoint.bash && \
@@ -251,7 +252,7 @@ RUN source /entrypoint.bash -- && \
 ARG ROS_WS="/opt/ros/${ROS_DISTRO}/ws"
 # hadolint ignore=SC1091
 RUN source /entrypoint.bash -- && \
-    colcon build --merge-install --symlink-install --cmake-args -DPython3_EXECUTABLE=${ISAAC_SIM_PYTHON} --paths "${SRB_PATH}" --build-base "${ROS_WS}/build" --install-base "${ROS_WS}/install" && \
+    colcon build --merge-install --symlink-install --cmake-args -DPython3_EXECUTABLE="${ISAAC_SIM_PYTHON}" --paths "${SRB_PATH}" --build-base "${ROS_WS}/build" --install-base "${ROS_WS}/install" && \
     rm -rf ./log && \
     sed -i "s|source \"/opt/ros/${ROS_DISTRO}/setup.bash\" --|source \"${ROS_WS}/install/setup.bash\" --|" /entrypoint.bash
 

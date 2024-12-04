@@ -198,13 +198,12 @@ impl EnvironmentConfig {
     }
 
     #[cfg(any(feature = "json", feature = "toml", feature = "yaml"))]
-    fn __reduce__(&self) -> PyResult<(PyObject, PyObject)> {
+    fn __reduce__(&self) -> PyResult<(pyo3::Py<pyo3::PyAny>, pyo3::Py<pyo3::types::PyTuple>)> {
         Python::with_gil(|py| {
-            py.run_bound("import space_robotics_bench", None, None)
-                .unwrap();
+            py.run(c"import space_robotics_bench", None, None).unwrap();
             let deserialize = py
-                .eval_bound(
-                    "space_robotics_bench._rs.envs.EnvironmentConfig._deserialize",
+                .eval(
+                    c"space_robotics_bench._rs.envs.EnvironmentConfig._deserialize",
                     None,
                     None,
                 )
@@ -217,7 +216,10 @@ impl EnvironmentConfig {
             #[cfg(all(feature = "toml", not(any(feature = "json", feature = "yaml"))))]
             let data = toml::to_string(self).unwrap().as_bytes().to_vec();
 
-            Ok((deserialize.to_object(py), (data,).to_object(py)))
+            Ok((
+                deserialize.into_pyobject(py)?.unbind(),
+                (data,).into_pyobject(py)?.unbind(),
+            ))
         })
     }
 
