@@ -1,5 +1,3 @@
-# Space Robotics Bench
-
 ![](./_images/srb_multi_env.jpg)
 
 The **Space Robotics Bench** aims to be a comprehensive collection of environments and tasks for robotics research in the challenging domain of space. The benchmark covers a wide range of applications and scenarios while providing a unified framework for experimenting with new tasks. Although the primary focus is on the application of robot learning techniques, the benchmark is designed to be flexible and extensible to accommodate a variety of research directions.
