@@ -36,6 +36,7 @@ egui_commonmark = { version = "0.19", default-features = false, features = [
     "pulldown_cmark",
 ] }
 r2r = { version = "0.9" }
+winit = { version = "0.30" }
 
 display_json = { workspace = true }
 chrono = { workspace = true }
