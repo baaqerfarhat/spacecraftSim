@@ -9,7 +9,7 @@ homepage = "https://github.com/AndrejOrsula/space_robotics_bench"
 repository = "https://github.com/AndrejOrsula/space_robotics_bench"
 documentation = "https://andrejorsula.github.io/space_robotics_bench"
 edition = "2021"
-rust-version = "1.80"
+rust-version = "1.82"
 version = "0.0.1"
 publish = false
 
