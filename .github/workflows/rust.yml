@@ -109,7 +109,7 @@ jobs:
       ## [stable] Generate coverage with cargo llvm-cov
       - name: stable | Generate coverage
         if: ${{ matrix.toolchain == 'stable' }}
-        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo llvm-cov --workspace --exclude ${{ env.CRATE_NAME_PY }} --all-features --lcov --output-path lcov.info
+        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo llvm-cov --workspace --exclude ${{ env.CRATE_NAME_PY }} --exclude ${{ env.CRATE_NAME_GUI }} --all-features --lcov --output-path lcov.info
       ## [stable] Upload coverage to codecov.io
       - name: stable | Upload coverage
         if: ${{ matrix.toolchain == 'stable' }}
