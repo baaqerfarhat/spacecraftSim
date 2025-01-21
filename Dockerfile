@@ -241,7 +241,7 @@ COPY . "${SRB_PATH}"
 ## Build Rust targets
 # hadolint ignore=SC1091
 RUN source /entrypoint.bash -- && \
-    cargo build --release --workspace --all-targets
+    cargo build --release --all-targets
 
 ## Install project as editable Python module
 # hadolint ignore=SC1091
