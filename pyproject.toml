@@ -2,9 +2,6 @@
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.hatch.metadata]
-allow-direct-references = true
-
 [tool.mypy]
 plugins = ["pydantic.mypy"]
 ignore_missing_imports = true
@@ -72,7 +69,7 @@ sb3 = [
   "stable-baselines3~=2.4",
   "sb3-contrib~=2.4",
   # Note: The fork relaxes the dependency for gymnasium (shimmy requires gymnasium>=1.0)
-  "rl_zoo3@git+https://github.com/AndrejOrsula/rl-baselines3-zoo.git@e04921b4ccbadbc9f6bcc46cc1787ffc1d2c8963",
+  # "rl_zoo3@git+https://github.com/AndrejOrsula/rl-baselines3-zoo.git@e04921b4ccbadbc9f6bcc46cc1787ffc1d2c8963",
 ]
 sbx = [
   #
