@@ -19,8 +19,10 @@ env:
   MSRV: "1.82"
   ROS_DISTRO: "jazzy"
   CARGO_TERM_COLOR: always
-  CRATE_NAME_PY: space_robotics_bench_py
-  CRATE_NAME_GUI: space_robotics_bench_gui
+  CRATE_NAME_SYS: srb_sys
+  CRATE_NAME_LIB: srb
+  CRATE_NAME_PY: srb_py
+  CRATE_NAME_GUI: srb_gui
 
 jobs:
   rustfmt:
@@ -70,37 +72,37 @@ jobs:
 
       ## cargo check
       - name: cargo check
-        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo check --workspace --exclude ${{ env.CRATE_NAME_PY }} --all-targets --verbose
+        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo check --workspace --all-targets --verbose
       - name: cargo check --no-default-features
-        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo check --workspace --exclude ${{ env.CRATE_NAME_PY }} --all-targets --no-default-features --verbose
+        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo check --workspace --all-targets --no-default-features --verbose
       - name: cargo check --all-features
-        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo check --workspace --exclude ${{ env.CRATE_NAME_PY }} --all-targets --all-features --verbose
+        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo check --workspace --all-targets --all-features --verbose
 
       ## cargo test
       - name: cargo test
-        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo test --workspace --exclude ${{ env.CRATE_NAME_PY }} --all-targets --verbose
+        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo test --workspace --all-targets --verbose
       - name: cargo test --no-default-features
-        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo test --workspace --exclude ${{ env.CRATE_NAME_PY }} --all-targets --no-default-features --verbose
+        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo test --workspace --all-targets --no-default-features --verbose
       - name: cargo test --all-features
-        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo test --workspace --exclude ${{ env.CRATE_NAME_PY }} --all-targets --all-features --verbose
+        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo test --workspace --all-targets --all-features --verbose
 
       ## cargo test --doc
       - name: cargo test --doc
-        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo test --workspace --exclude ${{ env.CRATE_NAME_PY }} --doc --verbose
+        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo test --workspace --doc --verbose
       - name: cargo test --doc --no-default-features
-        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo test --workspace --exclude ${{ env.CRATE_NAME_PY }} --doc --no-default-features --verbose
+        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo test --workspace --doc --no-default-features --verbose
       - name: cargo test --doc --all-features
-        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo test --workspace --exclude ${{ env.CRATE_NAME_PY }} --doc --all-features --verbose
+        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo test --workspace --doc --all-features --verbose
 
       ## [stable] cargo clippy
       - name: stable | cargo clippy
         if: ${{ matrix.toolchain == 'stable' }}
-        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo clippy --workspace --exclude ${{ env.CRATE_NAME_PY }} --all-targets --all-features --no-deps --verbose -- --deny warnings
+        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo clippy --workspace --all-targets --all-features --no-deps --verbose -- --deny warnings
 
       ## [stable] cargo doc
       - name: stable | cargo doc --document-private-items
         if: ${{ matrix.toolchain == 'stable' }}
-        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo doc --workspace --exclude ${{ env.CRATE_NAME_PY }} --all-features --no-deps --document-private-items --verbose
+        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo doc --workspace --all-features --no-deps --document-private-items --verbose
 
       ## [stable] Code coverage
       - name: stable | Install cargo llvm-cov for code coverage
@@ -109,7 +111,7 @@ jobs:
       ## [stable] Generate coverage with cargo llvm-cov
       - name: stable | Generate coverage
         if: ${{ matrix.toolchain == 'stable' }}
-        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo llvm-cov --workspace --exclude ${{ env.CRATE_NAME_PY }} --exclude ${{ env.CRATE_NAME_GUI }} --all-features --lcov --output-path lcov.info
+        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo llvm-cov --workspace --exclude ${{ env.CRATE_NAME_GUI }} --all-features --lcov --output-path lcov.info
       ## [stable] Upload coverage to codecov.io
       - name: stable | Upload coverage
         if: ${{ matrix.toolchain == 'stable' }}
@@ -126,3 +128,29 @@ jobs:
       - uses: EmbarkStudios/cargo-deny-action@v2
         with:
           command: check bans licenses sources
+
+  publish:
+    if: ${{ github.event_name == 'release' }}
+    needs:
+      - cargo
+      - deny
+    runs-on: ubuntu-latest
+    env:
+      CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+
+      ## Publish to crates.io
+      - name: Publish crate (sys)
+        if: ${{ env.CARGO_REGISTRY_TOKEN != '' }}
+        run: cargo publish --no-verify --package ${{ env.CRATE_NAME_SYS }} --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+      - name: Publish crate (lib)
+        if: ${{ env.CARGO_REGISTRY_TOKEN != '' }}
+        run: cargo publish --no-verify --package ${{ env.CRATE_NAME_LIB }} --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+      - name: Publish crate (py)
+        if: ${{ env.CARGO_REGISTRY_TOKEN != '' }}
+        run: cargo publish --no-verify --package ${{ env.CRATE_NAME_PY }} --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+      - name: Publish crate (gui)
+        if: ${{ env.CARGO_REGISTRY_TOKEN != '' }}
+        run: cargo publish --no-verify --package ${{ env.CRATE_NAME_GUI }} --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
