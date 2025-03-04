@@ -9,3 +9,4 @@ from .base import (  # noqa: F401
     ManagedEnv,
     ManagedEnvCfg,
 )
+from .extension import VisualExt, VisualExtCfg  # noqa: F401
