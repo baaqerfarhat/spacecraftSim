@@ -104,22 +104,23 @@ jobs:
         if: ${{ matrix.toolchain == 'stable' }}
         run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo doc --workspace --all-features --no-deps --document-private-items --verbose
 
-      ## [stable] Code coverage
-      - name: stable | Install cargo llvm-cov for code coverage
-        uses: taiki-e/install-action@cargo-llvm-cov
-        if: ${{ matrix.toolchain == 'stable' }}
-      ## [stable] Generate coverage with cargo llvm-cov
-      - name: stable | Generate coverage
-        if: ${{ matrix.toolchain == 'stable' }}
-        run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo llvm-cov --workspace --exclude ${{ env.CRATE_NAME_GUI }} --all-features --lcov --output-path lcov.info
-      ## [stable] Upload coverage to codecov.io
-      - name: stable | Upload coverage
-        if: ${{ matrix.toolchain == 'stable' }}
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: lcov.info
-          fail_ci_if_error: false
+      # Note: There are currently no tests in the workspace
+      # ## [stable] Code coverage
+      # - name: stable | Install cargo llvm-cov for code coverage
+      #   uses: taiki-e/install-action@cargo-llvm-cov
+      #   if: ${{ matrix.toolchain == 'stable' }}
+      # ## [stable] Generate coverage with cargo llvm-cov
+      # - name: stable | Generate coverage
+      #   if: ${{ matrix.toolchain == 'stable' }}
+      #   run: source /opt/ros/${{ env.ROS_DISTRO }}/setup.bash && cargo llvm-cov --workspace --exclude ${{ env.CRATE_NAME_GUI }} --all-features --lcov --output-path lcov.info
+      # ## [stable] Upload coverage to codecov.io
+      # - name: stable | Upload coverage
+      #   if: ${{ matrix.toolchain == 'stable' }}
+      #   uses: codecov/codecov-action@v5
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     files: lcov.info
+      #     fail_ci_if_error: false
 
   deny:
     runs-on: ubuntu-latest
