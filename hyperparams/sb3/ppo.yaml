@@ -1,22 +1,16 @@
-# Reference: https://github.com/DLR-RM/rl-baselines3-zoo/blob/27e081eb24419ee843ae1c329b0482db823c9fc1/hyperparams/ppo.yml
-seed: 42
-
-policy: "MlpPolicy"
-n_timesteps: 200000000
-batch_size: 256
-n_steps: 512
+policy: "MultiInputPolicy"
+normalize: true
+n_timesteps: 1000000000
+batch_size: 8192
+n_steps: 32
 gamma: 0.99
-learning_rate: lin_5e-5
-ent_coef: 0.002
-clip_range: 0.3
+learning_rate: lin_5e-4
+ent_coef: 0.01
+clip_range: 0.2
 n_epochs: 8
-gae_lambda: 0.9
-max_grad_norm: 2
-vf_coef: 0.4
-policy_kwargs: "dict(
-  log_std_init=-2,
-  ortho_init=False,
-  activation_fn=nn.ReLU,
-  share_features_extractor=False,
-  net_arch=dict(pi=[2048, 2048], vf=[2048, 2048])
-  )"
+gae_lambda: 0.95
+max_grad_norm: 1.0
+vf_coef: 1.0
+
+save_freq: 1000
+track: false
