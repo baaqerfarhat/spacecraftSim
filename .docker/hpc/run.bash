@@ -32,13 +32,13 @@ SINGULARITY_VOLUMES=(
     # Logs
     "${VOLUMES_ROOT}/.nvidia-omniverse/logs:/root/.nvidia-omniverse/logs:rw"
     "${VOLUMES_ROOT}/.nvidia-omniverse/logs/isaac-sim:/root/isaac-sim/kit/logs:rw"
+    ## SimForge
+    # Cache
+    "${VOLUMES_ROOT}/.cache/simforge:/root/.cache/simforge:rw"
     ## Project
     # Source
     "${REPOSITORY_DIR}:/root/ws:rw"
-    # Cache
-    "${VOLUMES_ROOT}/.cache/srb:/root/.cache/srb:rw"
-
-
+    ## Misc
     "${VOLUMES_ROOT}/home/users:/home/users:rw"
 )
 
@@ -62,7 +62,7 @@ for volume in "${SINGULARITY_VOLUMES[@]}"; do
         host_dir="${BASH_REMATCH[1]}"
         if [ ! -d "${host_dir}" ]; then
             mkdir -p "${host_dir}"
-            echo -e "\033[1;90m[INFO] Created directory ${host_dir}\033[0m"
+            echo -e "[INFO] Created directory ${host_dir}"
         fi
     fi
 done
