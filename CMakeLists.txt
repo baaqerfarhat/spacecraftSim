@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(space_robotics_bench)
+project(srb)
 
 ## Find dependencies
 find_package(ament_cmake REQUIRED)

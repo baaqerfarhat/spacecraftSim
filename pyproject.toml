@@ -11,8 +11,9 @@ manifest-path = "crates/space_robotics_bench_py/Cargo.toml"
 env = ["SRB_SKIP_REGISTRATION=true"]
 
 [project]
-name = "space_robotics_bench"
-description = "Comprehensive benchmark for space robotics"
+name = "srb"
+version = "0.0.1"
+description = "Space Robotics Bench"
 authors = [{ name = "Andrej Orsula", email = "orsula.andrej@gmail.com" }]
 maintainers = [{ name = "Andrej Orsula", email = "orsula.andrej@gmail.com" }]
 urls = { Repository = "https://github.com/AndrejOrsula/space_robotics_bench", Documentation = "https://AndrejOrsula.github.io/space_robotics_bench" }
