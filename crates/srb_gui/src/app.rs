@@ -505,7 +505,8 @@ impl App {
                 egui::Theme::Dark,
                 "Locomotion",
                 crate::utils::Difficulty::Demo,
-                crate::macros::include_content_image!("_images/locomotion_moon.jpg"),
+                // TODO[low]: Update locomotion task in GUI with the proper image
+                crate::macros::include_content_image!("_images/peg_in_hole_moon.jpg"),
                 crate::config::TaskConfig {
                     task: crate::config::Task::LocomotionVelocityTracking,
                     seed: 0,
