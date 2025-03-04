@@ -46,6 +46,8 @@ jobs:
       #     token: ${{ secrets.CODECOV_TOKEN }}
       #     files: ./coverage.xml
       #     fail_ci_if_error: false
+      - name: Build
+        run: uv build
       - name: Publish
         if: ${{ github.event_name == 'release' && env.UV_PYPI_TOKEN != '' }}
         run: uv publish -t ${{ env.UV_PYPI_TOKEN }}
