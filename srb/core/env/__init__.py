@@ -24,3 +24,20 @@ from .manipulation import (  # noqa: F401
     ManipulatorEventCfg,
     ManipulatorSceneCfg,
 )
+from .mobile import (  # noqa: F401
+    AerialEnv,
+    AerialEnvCfg,
+    AerialEnvVisualExtCfg,
+    AerialEventCfg,
+    AerialSceneCfg,
+    GroundEnv,
+    GroundEnvCfg,
+    GroundEnvVisualExtCfg,
+    GroundEventCfg,
+    GroundSceneCfg,
+    OrbitalEnv,
+    OrbitalEnvCfg,
+    OrbitalEnvVisualExtCfg,
+    OrbitalEventCfg,
+    OrbitalSceneCfg,
+)
