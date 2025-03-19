@@ -9,8 +9,8 @@ if TYPE_CHECKING:
     from srb.core.asset import Articulation, RigidObject
 
 
-class BodyVelocityAction(ActionTerm):
-    cfg: "BodyVelocityActionCfg"
+class BodyAccelerationAction(ActionTerm):
+    cfg: "BodyAccelerationActionCfg"
     _asset: "Articulation | RigidObject"
 
     @property
@@ -30,14 +30,18 @@ class BodyVelocityAction(ActionTerm):
         self._processed_actions = self.raw_actions * self.cfg.scale
 
     def apply_actions(self):
-        current_velocity = self._asset._data.body_vel_w[:, 0].squeeze(1)
+        applied_velocities = (
+            self._asset._data.body_vel_w[:, 0].squeeze(1) + self.processed_actions
+        )
+        if self.cfg.relative:
+            applied_velocities += self._asset._data.body_acc_w[:, 0].squeeze(1)
 
-        applied_velocities = current_velocity + self.processed_actions
         self._asset.write_root_velocity_to_sim(applied_velocities)
 
 
 @configclass
-class BodyVelocityActionCfg(ActionTermCfg):
-    class_type: Type = BodyVelocityAction
+class BodyAccelerationActionCfg(ActionTermCfg):
+    class_type: Type = BodyAccelerationAction
 
+    relative: bool = False
     scale: float = 1.0

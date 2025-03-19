@@ -12,11 +12,11 @@ if TYPE_CHECKING:
     from srb.core.asset import Articulation
 
 
-class MulticopterBodyVelocityAction(ActionTerm):
-    cfg: "MulticopterBodyVelocityActionCfg"
+class MulticopterBodyAccelerationAction(ActionTerm):
+    cfg: "MulticopterBodyAccelerationActionCfg"
     _asset: "Articulation"
 
-    def __init__(self, cfg: "MulticopterBodyVelocityActionCfg", env: "AnyEnv"):
+    def __init__(self, cfg: "MulticopterBodyAccelerationActionCfg", env: "AnyEnv"):
         super().__init__(
             cfg,
             env,  # type: ignore
@@ -109,8 +109,8 @@ class MulticopterBodyVelocityAction(ActionTerm):
 
 
 @configclass
-class MulticopterBodyVelocityActionCfg(ActionTermCfg):
-    class_type: Type = MulticopterBodyVelocityAction  # type: ignore
+class MulticopterBodyAccelerationActionCfg(ActionTermCfg):
+    class_type: Type = MulticopterBodyAccelerationAction  # type: ignore
 
     frame_base: str = MISSING  # type: ignore
     regex_rotor_joints: str = MISSING  # type: ignore

@@ -3,13 +3,13 @@ from dataclasses import MISSING
 import torch
 
 from srb.core.action.action_group import ActionGroup
-from srb.core.action.term import MulticopterBodyVelocityActionCfg
+from srb.core.action.term import MulticopterBodyAccelerationActionCfg
 from srb.utils.cfg import configclass
 
 
 @configclass
-class MulticopterBodyVelocityActionGroup(ActionGroup):
-    cmd_vel: MulticopterBodyVelocityActionCfg = MISSING  # type: ignore
+class MulticopterBodyAccelerationActionGroup(ActionGroup):
+    cmd_vel: MulticopterBodyAccelerationActionCfg = MISSING  # type: ignore
 
     def map_cmd_to_action(self, twist: torch.Tensor, event: bool) -> torch.Tensor:
         return torch.concat(

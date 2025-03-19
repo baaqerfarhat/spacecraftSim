@@ -17,11 +17,11 @@ class ActionGroup:
         super().__init_subclass__(**kwargs)
         if action_group_metaclass:
             return
-        assert convert_to_snake_case(cls.__name__) not in (
-            convert_to_snake_case(action_group.__name__)
+        assert canonicalize_action_group_name(cls.__name__) not in (
+            canonicalize_action_group_name(action_group.__name__)
             for action_group in ActionGroupRegistry.registry
         ), (
-            f"Cannot register multiple action groups with an identical name: '{cls.__module__}:{cls.__name__}' already exists as '{next(robot for robot in ActionGroupRegistry.registry if convert_to_snake_case(cls.__name__) == convert_to_snake_case(robot.__name__)).__module__}:{cls.__name__}'"
+            f"Cannot register multiple action groups with an identical name: '{cls.__module__}:{cls.__name__}' already exists as '{next(robot for robot in ActionGroupRegistry.registry if canonicalize_action_group_name(cls.__name__) == canonicalize_action_group_name(robot.__name__)).__module__}:{cls.__name__}'"
         )
         ActionGroupRegistry.registry.append(cls)
 
@@ -48,6 +48,10 @@ class ActionGroupRegistry:
     @classmethod
     def get_by_name(cls, name: str) -> Type[ActionGroup] | None:
         for action_group in cls.registry:
-            if convert_to_snake_case(action_group.__name__) == name:
+            if canonicalize_action_group_name(action_group.__name__) == name:
                 return action_group
         return None
+
+
+def canonicalize_action_group_name(input: str) -> str:
+    return convert_to_snake_case(input).removesuffix("_action_group")

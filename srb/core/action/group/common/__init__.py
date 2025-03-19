@@ -1,4 +1,7 @@
-from .body import BodyVelocityActionGroup  # noqa: F401
+from .body import (  # noqa: F401
+    BodyAccelerationActionGroup,
+    BodyAccelerationRelativeActionGroup,
+)
 from .joint import (  # noqa: F401
     JointEffortActionGroup,
     JointPositionActionGroup,
