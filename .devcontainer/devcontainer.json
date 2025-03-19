@@ -51,7 +51,14 @@
 	"initializeCommand": "XAUTH=\"${localEnv:TMPDIR:/tmp}/xauth_docker_vsc_${localWorkspaceFolderBasename}\"; touch \"${XAUTH}\"; chmod a+r \"${XAUTH}\"; XAUTH_LIST=$(xauth nlist \"${localEnv:DISPLAY}\"); if [ -n \"${XAUTH_LIST}\" ]; then echo \"${XAUTH_LIST}\" | sed -e 's/^..../ffff/' | xauth -f \"${XAUTH}\" nmerge -; fi",
 	"customizations": {
 		"vscode": {
-			"extensions": []
+			"extensions": [
+				"ms-python.python",
+				"ms-python.vscode-pylance",
+				"ms-python.mypy-type-checker",
+				"charliermarsh.ruff",
+				"rust-lang.rust-analyzer",
+				"tamasfe.even-better-toml"
+			]
 		}
 	}
 }
