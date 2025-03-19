@@ -34,7 +34,7 @@ class UnitreeH1(Humanoid):
                 max_depenetration_velocity=1.0,
             ),
             articulation_props=ArticulationRootPropertiesCfg(
-                enabled_self_collisions=False,
+                enabled_self_collisions=True,
                 solver_position_iteration_count=4,
                 solver_velocity_iteration_count=4,
             ),
@@ -114,7 +114,7 @@ class UnitreeH1(Humanoid):
     )
 
     ## Actions
-    action_cfg: ActionGroup = JointPositionActionGroup(
+    actions: ActionGroup = JointPositionActionGroup(
         JointPositionActionCfg(asset_name="robot", joint_names=[".*"], scale=0.5)
     )
 
@@ -151,7 +151,7 @@ class UnitreeG1(Humanoid):
                 max_depenetration_velocity=1.0,
             ),
             articulation_props=ArticulationRootPropertiesCfg(
-                enabled_self_collisions=False,
+                enabled_self_collisions=True,
                 solver_position_iteration_count=8,
                 solver_velocity_iteration_count=4,
             ),
@@ -247,7 +247,7 @@ class UnitreeG1(Humanoid):
     )
 
     ## Actions
-    action_cfg: ActionGroup = JointPositionActionGroup(
+    actions: ActionGroup = JointPositionActionGroup(
         JointPositionActionCfg(asset_name="robot", joint_names=[".*"], scale=0.5)
     )
 

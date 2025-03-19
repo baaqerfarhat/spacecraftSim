@@ -17,10 +17,10 @@ class Robot(Asset, asset_entrypoint=AssetType.ROBOT):
     asset_cfg: RigidObjectCfg | ArticulationCfg
 
     ## Actions
-    action_cfg: ActionGroup
+    actions: ActionGroup
 
     ## Frames
-    frame_base: Frame = Frame()
+    frame_base: Frame
 
     def __init_subclass__(
         cls,

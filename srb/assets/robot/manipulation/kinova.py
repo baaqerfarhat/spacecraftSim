@@ -33,7 +33,7 @@ class KinovaJ2n6s300(SerialManipulator):
                 max_depenetration_velocity=5.0,
             ),
             articulation_props=ArticulationRootPropertiesCfg(
-                enabled_self_collisions=True,
+                enabled_self_collisions=False,
                 solver_position_iteration_count=8,
                 solver_velocity_iteration_count=0,
             ),
@@ -80,7 +80,7 @@ class KinovaJ2n6s300(SerialManipulator):
     end_effector: Tool | None = None
 
     ## Actions
-    action_cfg: ActionGroup = InverseKinematicsActionGroup(
+    actions: ActionGroup = InverseKinematicsActionGroup(
         DifferentialInverseKinematicsActionCfg(
             asset_name="robot",
             joint_names=[".*_joint_.*"],
@@ -132,7 +132,7 @@ class KinovaJ2n7s300(SerialManipulator):
                 max_depenetration_velocity=5.0,
             ),
             articulation_props=ArticulationRootPropertiesCfg(
-                enabled_self_collisions=True,
+                enabled_self_collisions=False,
                 solver_position_iteration_count=8,
                 solver_velocity_iteration_count=0,
             ),
@@ -180,7 +180,7 @@ class KinovaJ2n7s300(SerialManipulator):
     end_effector: Tool | None = None
 
     ## Actions
-    action_cfg: ActionGroup = InverseKinematicsActionGroup(
+    actions: ActionGroup = InverseKinematicsActionGroup(
         DifferentialInverseKinematicsActionCfg(
             asset_name="robot",
             joint_names=[".*_joint_.*"],
@@ -269,7 +269,7 @@ class KinovaGen3(SerialManipulator):
     # end_effector: Tool | None = FrankaHand()
 
     ## Actions
-    action_cfg: ActionGroup = InverseKinematicsActionGroup(
+    actions: ActionGroup = InverseKinematicsActionGroup(
         DifferentialInverseKinematicsActionCfg(
             asset_name="robot",
             joint_names=["joint_.*"],

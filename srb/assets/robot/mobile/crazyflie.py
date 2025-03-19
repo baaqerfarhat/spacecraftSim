@@ -1,7 +1,7 @@
 from srb.core.action import (
     ActionGroup,
-    MulticopterBodyVelocityActionCfg,
-    MulticopterBodyVelocityActionGroup,
+    MulticopterBodyAccelerationActionCfg,
+    MulticopterBodyAccelerationActionGroup,
 )
 from srb.core.actuator import ImplicitActuatorCfg
 from srb.core.asset import ArticulationCfg, Frame, Multicopter, Transform
@@ -59,8 +59,8 @@ class Crazyflie(Multicopter):
     )
 
     ## Actions
-    action_cfg: ActionGroup = MulticopterBodyVelocityActionGroup(
-        MulticopterBodyVelocityActionCfg(
+    actions: ActionGroup = MulticopterBodyAccelerationActionGroup(
+        MulticopterBodyAccelerationActionCfg(
             asset_name="robot",
             frame_base="body",
             regex_rotor_joints="m[1-4]_joint",
@@ -80,15 +80,15 @@ class Crazyflie(Multicopter):
     frame_payload_mount: Frame = Frame(
         prim_relpath="body",
         offset=Transform(
-            pos=(-0.1, 0.0, 0.25),
+            pos=(0.0, 0.0, 0.0),
             rot=rpy_to_quat(0.0, 0.0, 0.0),
         ),
     )
     frame_manipulator_mount: Frame = Frame(
         prim_relpath="body",
         offset=Transform(
-            pos=(0.225, 0.0, 0.1),
-            rot=rpy_to_quat(0.0, 0.0, 0.0),
+            pos=(0.0, 0.0, 0.005),
+            rot=rpy_to_quat(0.0, 180.0, 0.0),
         ),
     )
     frame_downward_camera: Frame = Frame(

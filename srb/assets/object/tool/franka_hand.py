@@ -51,7 +51,7 @@ class FrankaHand(ActiveTool):
     )
 
     ## Actions
-    action_cfg: ActionGroup = JointPositionBinaryActionGroup(
+    actions: ActionGroup = JointPositionBinaryActionGroup(
         BinaryJointPositionActionCfg(
             asset_name="robot",
             joint_names=["panda_finger_joint.*"],

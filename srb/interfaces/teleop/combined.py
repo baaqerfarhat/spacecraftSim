@@ -21,7 +21,7 @@ class CombinedTeleopInterface(DeviceBase):
         node: "Node | None" = None,
         pos_sensitivity: float = 1.0,
         rot_sensitivity: float = 1.0,
-        action_cfg: ActionGroup | None = None,
+        actions: ActionGroup | None = None,
     ):
         if not node and (
             TeleopDeviceType.ROS in devices or TeleopDeviceType.HAPTIC in devices
@@ -37,7 +37,7 @@ class CombinedTeleopInterface(DeviceBase):
         else:
             self._node = node
 
-        self._action_cfg = action_cfg
+        self._actions = actions
         self.interfaces = []
         self.ft_feedback_interfaces = []
         for device in devices:
@@ -119,7 +119,7 @@ class CombinedTeleopInterface(DeviceBase):
         for interface in self.interfaces:
             if (
                 isinstance(interface, KeyboardTeleopInterface)
-                and self._action_cfg is not None
+                and self._actions is not None
             ):
                 msg += self._keyboard_control_scheme()
                 continue

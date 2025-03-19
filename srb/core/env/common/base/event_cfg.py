@@ -154,7 +154,7 @@ class BaseEventCfg:
             next(
                 (
                     action_term
-                    for action_term in env_cfg._robot.manipulator.action_cfg.__dict__.values()
+                    for action_term in env_cfg._robot.manipulator.actions.__dict__.values()
                     if isinstance(action_term, DifferentialInverseKinematicsActionCfg)
                 ),
                 None,

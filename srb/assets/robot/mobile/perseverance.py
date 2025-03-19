@@ -74,7 +74,7 @@ class Perseverance(WheeledRobot):
     )
 
     ## Actions
-    action_cfg: ActionGroup = WheeledRoverActionGroup(
+    actions: ActionGroup = WheeledRoverActionGroup(
         WheeledRoverDriveActionCfg(
             asset_name="robot",
             wheelbase=(2.26, 2.14764),
@@ -103,15 +103,15 @@ class Perseverance(WheeledRobot):
     frame_payload_mount: Frame = Frame(
         prim_relpath="body",
         offset=Transform(
-            pos=(-0.1, 0.0, 0.25),
-            rot=rpy_to_quat(0.0, 0.0, 0.0),
+            pos=(0.0, 0.0, 1.25),
+            rot=rpy_to_quat(0.0, 0.0, -90.0),
         ),
     )
     frame_manipulator_mount: Frame = Frame(
         prim_relpath="body",
         offset=Transform(
-            pos=(0.225, 0.0, 0.1),
-            rot=rpy_to_quat(0.0, 0.0, 0.0),
+            pos=(0.0, -0.875, 1.25),
+            rot=rpy_to_quat(0.0, 0.0, -90.0),
         ),
     )
     frame_front_camera: Frame = Frame(

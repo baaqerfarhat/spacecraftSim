@@ -82,7 +82,7 @@ class ShadowHand(ActiveTool):
     )
 
     ## Actions
-    action_cfg: ActionGroup = JointPositionActionGroup()
+    actions: ActionGroup = JointPositionActionGroup()
 
     ## Frames
     frame_mount: Frame = Frame(

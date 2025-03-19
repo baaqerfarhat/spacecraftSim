@@ -1,6 +1,10 @@
 import simforge_foundry
 
-from srb.core.action import ActionGroup, BodyVelocityActionCfg, BodyVelocityActionGroup
+from srb.core.action import (
+    ActionGroup,
+    BodyAccelerationActionCfg,
+    BodyAccelerationActionGroup,
+)
 from srb.core.asset import Frame, OrbitalRobot, RigidObjectCfg, Transform
 from srb.core.sim import (
     CollisionPropertiesCfg,
@@ -32,18 +36,21 @@ class Cubesat(OrbitalRobot):
     )
 
     ## Actions
-    action_cfg: ActionGroup = BodyVelocityActionGroup(
-        BodyVelocityActionCfg(asset_name="robot", scale=0.05)
+    actions: ActionGroup = BodyAccelerationActionGroup(
+        BodyAccelerationActionCfg(asset_name="robot", scale=0.05)
     )
 
     ## Frames
+    frame_base: Frame = Frame(prim_relpath="cubesat")
     frame_payload_mount: Frame = Frame(
+        prim_relpath="cubesat",
         offset=Transform(
             pos=(0.0, 0.0, 0.0),
             rot=rpy_to_quat(0.0, 0.0, 0.0),
         ),
     )
     frame_manipulator_mount: Frame = Frame(
+        prim_relpath="cubesat",
         offset=Transform(
             pos=(0.0, 0.0, 0.05),
             rot=rpy_to_quat(0.0, 0.0, 0.0),

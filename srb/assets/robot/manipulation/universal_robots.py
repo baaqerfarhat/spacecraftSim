@@ -10,6 +10,7 @@ from srb.core.sim import (
     ArticulationRootPropertiesCfg,
     CollisionPropertiesCfg,
     MeshCollisionPropertiesCfg,
+    MultiAssetSpawnerCfg,
     RigidBodyPropertiesCfg,
     UsdFileCfg,
 )
@@ -62,7 +63,7 @@ class UR3(SerialManipulator):
     )
 
     ## Actions
-    action_cfg: ActionGroup = InverseKinematicsActionGroup(
+    actions: ActionGroup = InverseKinematicsActionGroup(
         DifferentialInverseKinematicsActionCfg(
             asset_name="robot",
             joint_names=[".*_joint"],
@@ -142,7 +143,7 @@ class UR3e(SerialManipulator):
     )
 
     ## Actions
-    action_cfg: ActionGroup = InverseKinematicsActionGroup(
+    actions: ActionGroup = InverseKinematicsActionGroup(
         DifferentialInverseKinematicsActionCfg(
             asset_name="robot",
             joint_names=[".*_joint"],
@@ -222,7 +223,7 @@ class UR5(SerialManipulator):
     )
 
     ## Actions
-    action_cfg: ActionGroup = InverseKinematicsActionGroup(
+    actions: ActionGroup = InverseKinematicsActionGroup(
         DifferentialInverseKinematicsActionCfg(
             asset_name="robot",
             joint_names=[".*_joint"],
@@ -302,7 +303,7 @@ class UR5e(SerialManipulator):
     )
 
     ## Actions
-    action_cfg: ActionGroup = InverseKinematicsActionGroup(
+    actions: ActionGroup = InverseKinematicsActionGroup(
         DifferentialInverseKinematicsActionCfg(
             asset_name="robot",
             joint_names=[".*_joint"],
@@ -382,7 +383,7 @@ class UR10(SerialManipulator):
     )
 
     ## Actions
-    action_cfg: ActionGroup = InverseKinematicsActionGroup(
+    actions: ActionGroup = InverseKinematicsActionGroup(
         DifferentialInverseKinematicsActionCfg(
             asset_name="robot",
             joint_names=[".*_joint"],
@@ -465,7 +466,7 @@ class UR10e(SerialManipulator):
     )
 
     ## Actions
-    action_cfg: ActionGroup = InverseKinematicsActionGroup(
+    actions: ActionGroup = InverseKinematicsActionGroup(
         DifferentialInverseKinematicsActionCfg(
             asset_name="robot",
             joint_names=[".*_joint"],
@@ -545,7 +546,7 @@ class UR16e(SerialManipulator):
     )
 
     ## Actions
-    action_cfg: ActionGroup = InverseKinematicsActionGroup(
+    actions: ActionGroup = InverseKinematicsActionGroup(
         DifferentialInverseKinematicsActionCfg(
             asset_name="robot",
             joint_names=[".*_joint"],
@@ -625,7 +626,7 @@ class UR20(SerialManipulator):
     )
 
     ## Actions
-    action_cfg: ActionGroup = InverseKinematicsActionGroup(
+    actions: ActionGroup = InverseKinematicsActionGroup(
         DifferentialInverseKinematicsActionCfg(
             asset_name="robot",
             joint_names=[".*_joint"],
@@ -705,7 +706,59 @@ class UR30(SerialManipulator):
     )
 
     ## Actions
-    action_cfg: ActionGroup = InverseKinematicsActionGroup(
+    actions: ActionGroup = InverseKinematicsActionGroup(
+        DifferentialInverseKinematicsActionCfg(
+            asset_name="robot",
+            joint_names=[".*_joint"],
+            base_name="base_link",
+            body_name="wrist_3_link",
+            controller=DifferentialIKControllerCfg(
+                command_type="pose",
+                use_relative_mode=True,
+                ik_method="svd",
+            ),
+            scale=0.025,
+            body_offset=DifferentialInverseKinematicsActionCfg.OffsetCfg(),
+        ),
+    )
+
+    ## Frames
+    frame_base: Frame = Frame(prim_relpath="base_link")
+    frame_flange: Frame = Frame(prim_relpath="wrist_3_link")
+    frame_base_camera: Frame = Frame(
+        prim_relpath="base_link/camera_base",
+        offset=Transform(
+            pos=(0.06, 0.0, 0.15),
+            rot=rpy_to_quat(0.0, -10.0, 0.0),
+        ),
+    )
+    frame_wrist_camera: Frame = Frame(
+        prim_relpath="wrist_3_link/camera_wrist",
+        offset=Transform(
+            pos=(0.07, 0.0, 0.05),
+            rot=rpy_to_quat(0.0, -60.0, 180.0),
+        ),
+    )
+
+
+class RandomURManipulator(SerialManipulator):
+    asset_cfg: ArticulationCfg = UR30().asset_cfg.copy()  # type: ignore
+    asset_cfg.prim_path = "{ENV_REGEX_NS}/anymal"
+    asset_cfg.spawn = MultiAssetSpawnerCfg(
+        random_choice=False,
+        assets_cfg=(
+            UR3e().asset_cfg.spawn,  # type: ignore
+            UR5().asset_cfg.spawn,  # type: ignore
+            UR10e().asset_cfg.spawn,  # type: ignore
+            UR16e().asset_cfg.spawn,  # type: ignore
+            UR20().asset_cfg.spawn,  # type: ignore
+            UR30().asset_cfg.spawn,  # type: ignore
+        ),
+        activate_contact_sensors=True,
+    )
+
+    ## Actions
+    actions: ActionGroup = InverseKinematicsActionGroup(
         DifferentialInverseKinematicsActionCfg(
             asset_name="robot",
             joint_names=[".*_joint"],

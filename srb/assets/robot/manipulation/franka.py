@@ -74,7 +74,7 @@ class Franka(SerialManipulator):
     end_effector: Tool | None = FrankaHand()
 
     ## Actions
-    action_cfg: ActionGroup = InverseKinematicsActionGroup(
+    actions: ActionGroup = InverseKinematicsActionGroup(
         DifferentialInverseKinematicsActionCfg(
             asset_name="robot",
             joint_names=["panda_joint.*"],
@@ -109,7 +109,7 @@ class Franka(SerialManipulator):
     frame_wrist_camera: Frame = Frame(
         prim_relpath="panda_link7/camera_wrist",
         offset=Transform(
-            pos=(0.07, 0.0, 0.05),
-            rot=rpy_to_quat(0.0, -60.0, 180.0),
+            pos=(0.075, -0.075, 0.1),
+            rot=rpy_to_quat(0.0, -80.0, 135.0),
         ),
     )

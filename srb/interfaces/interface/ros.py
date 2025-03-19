@@ -26,7 +26,13 @@ from sensor_msgs.msg import Imu as ImuMsg
 from sensor_msgs.msg import JointState, PointCloud2
 from sensor_msgs.msg import PointField as ROSPointField
 from std_msgs.msg import Bool as BoolMsg
-from std_msgs.msg import Float32, Float32MultiArray, Header
+from std_msgs.msg import (
+    Float32,
+    Float32MultiArray,
+    Header,
+    MultiArrayDimension,
+    MultiArrayLayout,
+)
 from std_srvs.srv import Empty as EmptySrv
 from tf2_ros import TransformBroadcaster
 from tf2_ros.static_transform_broadcaster import StaticTransformBroadcaster
@@ -37,9 +43,9 @@ from srb.core.action import (
     ActionTermCfg,
     BinaryJointPositionAction,
     BinaryJointVelocityAction,
-    BodyVelocityAction,
+    BodyAccelerationAction,
     DifferentialInverseKinematicsAction,
-    MulticopterBodyVelocityAction,
+    MulticopterBodyAccelerationAction,
     NonHolonomicAction,
     OperationalSpaceControllerAction,
     WheeledRoverDriveAction,
@@ -87,6 +93,12 @@ class RosInterface(InterfaceBase):
         ## Initialize queue for async executing of callbacks
         self._async_exec_queue: Dict[Callable, Dict[str, Any]] = {}
 
+        ## Initialize action buffer
+        assert self._env.action_space.shape is not None
+        self._actions = torch.zeros(
+            self._env.action_space.shape, dtype=torch.float32, device=self._env.device
+        )
+
         ## Setup ROS interfaces
         # Pub: Clock
         self._clock_pub: Publisher = self._node.create_publisher(
@@ -94,9 +106,6 @@ class RosInterface(InterfaceBase):
             topic="/clock",
             qos_profile=self.__QOS_PROFILE,
         )
-
-        ## Initialize action buffer
-        self._setup_action_interfaces()
 
         # Pub: Reward
         self._pub_reward: Sequence[Publisher] = tuple(
@@ -181,7 +190,7 @@ class RosInterface(InterfaceBase):
             self._node.destroy_node()
 
     @property
-    def actions(self) -> torch.Tensor:
+    def action(self) -> torch.Tensor:
         return self._actions
 
     def update(
@@ -191,6 +200,7 @@ class RosInterface(InterfaceBase):
         terminated: torch.Tensor,
         truncated: torch.Tensor,
         info: Dict[str, Any],
+        action: torch.Tensor | None = None,
         *args,
         **kwargs,
     ):
@@ -211,6 +221,17 @@ class RosInterface(InterfaceBase):
                     for reward_term in info["reward_terms"]
                 }
 
+            # Pub: Actions (only if action subscription is not set up)
+            if not hasattr(self, "_sub_action_term") and action is not None:
+                self._pub_action = tuple(
+                    self._node.create_publisher(
+                        Float32MultiArray,
+                        f"env{i}/action",
+                        qos_profile=self.__QOS_PROFILE,
+                    )
+                    for i in range(self._num_envs)
+                )
+
         ## Update clock
         time_s = self._env.common_step_counter * self._env.step_dt
         time_msg = Time(sec=int(time_s), nanosec=int((time_s % 1) * 1e9))
@@ -225,6 +246,23 @@ class RosInterface(InterfaceBase):
                 )
             self._pub_terminated[i].publish(BoolMsg(data=terminated[i].item()))
             self._pub_truncated[i].publish(BoolMsg(data=truncated[i].item()))
+
+        ## Publish actions
+        if action is not None and hasattr(self, "_pub_action"):
+            layout = MultiArrayLayout(
+                dim=[
+                    MultiArrayDimension(
+                        label="action",
+                        size=action.shape[1],
+                        stride=4 * action.shape[1],
+                    )
+                ],
+                data_offset=0,
+            )
+            for i in range(self._num_envs):
+                self._pub_action[i].publish(
+                    Float32MultiArray(layout=layout, data=action[i].tolist())
+                )
 
         ## Broadcast transforms (all scene assets)
         self._broadcast_transforms(time_msg)
@@ -258,13 +296,7 @@ class RosInterface(InterfaceBase):
 
     ## Action ##
 
-    def _setup_action_interfaces(self):
-        ## Initialize action buffer
-        assert self._env.action_space.shape is not None
-        self._actions = torch.zeros(
-            self._env.action_space.shape, dtype=torch.float32, device=self._env.device
-        )
-
+    def setup_action_sub(self):
         ## Action terms
         self._sub_action_term_all: Dict[str, Subscription] = {}
         self._sub_action_term: Dict[str, Sequence[Subscription]] = {}
@@ -394,7 +426,7 @@ class RosInterface(InterfaceBase):
         if isinstance(
             action_term,
             (
-                BodyVelocityAction,
+                BodyAccelerationAction,
                 DifferentialInverseKinematicsAction,
                 OperationalSpaceControllerAction,
             ),
@@ -411,7 +443,7 @@ class RosInterface(InterfaceBase):
         if isinstance(action_term, (NonHolonomicAction, WheeledRoverDriveAction)):
             return Twist, lambda msg: [msg.linear.x, msg.angular.z]
 
-        if isinstance(action_term, MulticopterBodyVelocityAction):
+        if isinstance(action_term, MulticopterBodyAccelerationAction):
             return Twist, lambda msg: [
                 msg.linear.x,
                 msg.linear.y,
@@ -1048,7 +1080,7 @@ class RosInterface(InterfaceBase):
     def _async_reset(self, env_ids: Sequence[int] | None = None):
         if env_ids:
             ids = torch.tensor(list(env_ids), dtype=torch.int, device=self._env.device)
-            self._actions[ids] *= 0.0
+            self._actions[ids].zero_()
             self._env._reset_idx(ids)  # type: ignore
 
             self._env.scene.write_data_to_sim()
@@ -1061,5 +1093,5 @@ class RosInterface(InterfaceBase):
                     while SimulationManager.assets_loading():
                         self._env.sim.render()
         else:
-            self._actions *= 0.0
+            self._actions.zero_()
             self._env.reset()

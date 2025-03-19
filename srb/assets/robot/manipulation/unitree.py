@@ -58,7 +58,7 @@ class UnitreeZ1(SerialManipulator):
     )
 
     ## Actions
-    action_cfg: ActionGroup = InverseKinematicsActionGroup(
+    actions: ActionGroup = InverseKinematicsActionGroup(
         DifferentialInverseKinematicsActionCfg(
             asset_name="robot",
             joint_names=["joint.*"],

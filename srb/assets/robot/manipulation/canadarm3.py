@@ -65,7 +65,7 @@ class Canadarm3(SerialManipulator):
     )
 
     ## Actions
-    action_cfg: ActionGroup = InverseKinematicsActionGroup(
+    actions: ActionGroup = InverseKinematicsActionGroup(
         DifferentialInverseKinematicsActionCfg(
             asset_name="robot",
             joint_names=["canadarm3_large_joint_[1-7]"],

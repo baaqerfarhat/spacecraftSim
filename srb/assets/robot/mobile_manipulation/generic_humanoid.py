@@ -72,7 +72,7 @@ class Humanoid21(Humanoid):
     )
 
     ## Actions
-    action_cfg: ActionGroup = JointPositionActionGroup(
+    actions: ActionGroup = JointPositionActionGroup(
         JointPositionActionCfg(asset_name="robot", joint_names=[".*"], scale=0.5)
     )
 
@@ -127,7 +127,7 @@ class Humanoid28(Humanoid):
     )
 
     ## Actions
-    action_cfg: ActionGroup = JointPositionActionGroup(
+    actions: ActionGroup = JointPositionActionGroup(
         JointPositionActionCfg(asset_name="robot", joint_names=[".*"], scale=0.5)
     )
 

@@ -56,7 +56,7 @@ class AllegroHand(ActiveTool):
     )
 
     ## Actions
-    action_cfg: ActionGroup = JointPositionActionGroup()
+    actions: ActionGroup = JointPositionActionGroup()
 
     ## Frames
     frame_mount: Frame = Frame(prim_relpath="allegro_mount")

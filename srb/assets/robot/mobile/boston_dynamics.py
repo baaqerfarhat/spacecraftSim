@@ -174,7 +174,7 @@ class Spot(LeggedRobot):
     )
 
     ## Actions
-    action_cfg: ActionGroup = JointPositionActionGroup(
+    actions: ActionGroup = JointPositionActionGroup(
         JointPositionActionCfg(asset_name="robot", joint_names=[".*"], scale=0.5)
     )
 
@@ -183,22 +183,22 @@ class Spot(LeggedRobot):
     frame_payload_mount: Frame = Frame(
         prim_relpath="body",
         offset=Transform(
-            pos=(-0.1, 0.0, 0.25),
+            pos=(-0.15, 0.0, 0.08),
             rot=rpy_to_quat(0.0, 0.0, 0.0),
         ),
     )
     frame_manipulator_mount: Frame = Frame(
         prim_relpath="body",
         offset=Transform(
-            pos=(0.225, 0.0, 0.1),
+            pos=(0.3, 0.0, 0.08),
             rot=rpy_to_quat(0.0, 0.0, 0.0),
         ),
     )
     frame_front_camera: Frame = Frame(
         prim_relpath="body/camera_front",
         offset=Transform(
-            pos=(-0.7675, 0.0, 1.9793),
-            rot=rpy_to_quat(0.0, 15.0, -90.0),
+            pos=(0.4, 0.0, 0.0),
+            rot=rpy_to_quat(0.0, 30.0, 0.0),
         ),
     )
 
