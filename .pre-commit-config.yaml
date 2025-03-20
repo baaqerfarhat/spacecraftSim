@@ -1,7 +1,7 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
 
-exclude: Cargo.lock|uv.lock
+exclude: Cargo.lock|uv.lock|CHANGELOG.md
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
@@ -61,18 +61,18 @@ repos:
     hooks:
       - id: uv-lock
 
-  - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
-    hooks:
-      - id: isort
-        args: ["--profile", "black"]
-
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.9.9
     hooks:
       - id: ruff
         args: ["--fix"]
       - id: ruff-format
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: ["--profile", "black"]
 
   - repo: https://github.com/hadolint/hadolint
     rev: v2.13.1-beta
@@ -85,3 +85,4 @@ repos:
     hooks:
       - id: codespell
         args: ["--ignore-words-list", "crate,HAA"]
+        exclude: cliff.toml
