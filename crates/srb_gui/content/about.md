@@ -1,4 +1,4 @@
-This demo enables participants to experience teleoperation of a robotic arm under various extraterrestrial conditions.
+This demo enables participants to experience the teleoperation of a robotic arm under various extraterrestrial conditions.
 
 While performing a task, participants can opt-in for **collection of the demonstrated trajectories** to contribute towards a training dataset usable for **Imitation Learning**, **Offline Reinforcement Learning**, and other related areas of **Robot Learning** research focused on contact-rich manipulation in space.
 

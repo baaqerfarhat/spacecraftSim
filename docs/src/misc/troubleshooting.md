@@ -16,4 +16,4 @@ This indicates that your NVIDIA driver is incompatible with Omniverse. To resolv
 
 ### Teleoperation Stuck
 
-During teleoperation, if you change your window focus, Omniverse may fail to register a button release, causing the robot to continuously move in one direction. To fix this, press the `L` key to reset the environment.
+During teleoperation with the keyboard, if you change your window focus, Omniverse may fail to register a button release, causing the robot to move continuously in one direction. To fix this, press the `L` key to reset the environment.

@@ -1,29 +1,70 @@
-![](./_images/srb_multi_env.jpg)
+![](_images/srb_multi_env.jpg)
 
-The **Space Robotics Bench** aims to be a comprehensive collection of environments and tasks for robotics research in the challenging domain of space. The benchmark covers a wide range of applications and scenarios while providing a unified framework for experimenting with new tasks. Although the primary focus is on the application of robot learning techniques, the benchmark is designed to be flexible and extensible to accommodate a variety of research directions.
-
-<div class="warning">
-This documentation is currently incomplete. Inactive pages found in the navigation panel indicate what topics will be covered prior to the first release. Please let us know by opening an issue if something is missing or about a specific topic that you are interested in having documented first. Thank you! :)
-</div>
+**Space Robotics Bench (SRB)** is a comprehensive collection of environments and tasks for robotics research in the challenging domain of space. It provides a unified framework for developing and validating autonomous systems under diverse extraterrestrial scenarios. At the same time, its design is flexible and extensible to accommodate a variety of development workflows and research directions beyond Earth.
 
 ## Key Features
 
-### On-Demand Procedural Generation with [Blender](https://blender.org)
+- **Highly Parallelized Simulation via [NVIDIA Isaac Sim](https://developer.nvidia.com/isaac-sim)**: SRB supports thousands of parallel simulation instances to accelerate workflows such as online learning, synthetic dataset generation, parameter tuning, and validation.
 
-Blender is used to generate procedural assets across a wide range of scenarios to provide environments that are representative of the diversity in space. By doing so, this benchmark emphasizes the need for generalization and adapatibility of robots in space due to their safety-critical nature.
+- **On-Demand Procedural Generation with [SimForge](https://github.com/AndrejOrsula/simforge)**: Automated procedural generation of simulation assets is leveraged to provide a unique scenario for each simulation instance, with the ultimate goal of developing autonomous systems that are both robust and adaptable to the unpredictable domain of space.
 
-### Highly-Parallelized Simulation with [NVIDIA Isaac Sim](https://developer.nvidia.com/isaac-sim)
+- **Extensive Domain Randomization**: All simulation instances can be further randomized to enhance the generalization of autonomous agents towards variable environment dynamics, visual appearance, illumination conditions, as well as sensor and actuation noise.
 
-By leveraging the hardware-acceleration capabilities of NVIDIA Isaac Sim, all environments support parallel simulation instances, significantly accelerating workflows such as parameter tuning, verification, synthetic data generation, and online learning. The uniqueness of each procedurally generated instance also contributes towards the diversity that robots experience alongside the included domain randomization. Furthermore, compliance with [Isaac Lab](https://isaac-sim.github.io/IsaacLab) enhances compatibility with a wide array of pre-configured robots and sensors.
+- **Compatibility with [Gymnasium API](https://gymnasium.farama.org)**: All tasks are compatible with a standardized API to ensure seamless integration with a broad ecosystem of libraries and frameworks for robot learning research.
 
-### Compatibility with [Gymnasium API](https://gymnasium.farama.org)
+- **Seamless Interface with [ROS 2](https://ros.org) & [Space ROS](https://space.ros.org)**: Simulation states, sensory outputs and actions of autonomous systems are available through ROS 2 middleware interface, enabling direct interoperability with the vast (Space) ROS ecosystem.
 
-All tasks are registered with the standardized Gymnasium API, ensuring seamless integration with a broad ecosystem of libraries and tools. This enables developers to leverage popular reinforcement learning and imitation learning algorithms while also simplifying the evaluation and comparison of various solutions across diverse scenarios, giving rise to potential collaboration efforts.
+- **Abstract Architecture**: The architecture of SRB is designed to be modular and extensible, allowing for easy integration of new assets, robots, tasks and workflows
 
-### Integration with [ROS 2](https://ros.org) & [Space ROS](https://space.ros.org)
+> 📑 If you have any questions or suggestions regarding this documentation, don't hesitate to reach out to us! More often than not, a lack of understanding is a result of poor documentation... Therefore, we are always looking to improve it.
 
-The benchmark can also be installed as a ROS 2 package to bring interoperability to its wide ecosystem, including aspects of Space ROS. This integration provides access to a rich set of tools and libraries that accelerate the development and deployment of robotic systems. At the same time, ROS developers get access to a set of reproducible space environments for evaluating their systems and algorithms while benefiting from the procedural variety and parallel instances via namespaced middleware communication.
+## Table of Contents (available in the left sidebar)
 
-### Agnostic Interfaces
+#### Overview
 
-The interfaces of the benchmark are designed with abstraction layers to ensure flexibility for various applications and systems. By adjusting configuration and changing procedural pipelines, a single task definition can be reused across different robots and domains of space. Moreover, all assets are decoupled from the benchmark into a separate [`srb_assets` repository](https://github.com/AndrejOrsula/srb_assets), enabling their straightforward integration with external frameworks and projects.
+1. [Environments](envs/index.md)
+1. [Robots](robots/index.md)
+1. [Integrations & Interfaces](integrations/index.md)
+
+#### Getting Started
+
+4. [System Requirements](getting_started/requirements.md)
+1. [Installation](getting_started/install.md)
+   - [Native](getting_started/install_native.md)
+   - [Docker (Recommended)](getting_started/install_docker.md)
+   - [Apptainer/Singularity](getting_started/install_apptainer.md)
+1. [Basic Usage](getting_started/basic_usage.md)
+1. [Workflows](workflows/index.md)
+   - [ROS 2](workflows/ros2.md)
+   - [Reinforcement Learning](workflows/reinforcement_learning.md)
+
+#### Configuration
+
+8. [Environment Configuration](config/env_cfg.md)
+1. [Agent Configuration](config/agent_cfg.md)
+
+#### Reference
+
+10. [Command Line Interface (CLI)](reference/cli.md)
+01. [Graphical User Interface (GUI)](reference/gui.md)
+
+#### Development
+
+12. [IDE Configuration](development/ide.md)
+01. [Dev Container](development/devcontainer.md)
+01. [Testing](development/testing.md)
+01. [Documentation](development/documentation.md)
+01. [Utilities](development/utilities.md)
+
+#### Contributing
+
+17. [New Assets](contributing/new_assets.md)
+01. [New Tasks](contributing/new_tasks.md)
+
+#### Miscellaneous
+
+- [Attributions](misc/attributions.md)
+- [Contributors](misc/contributors.md)
+- [Citation](misc/citation.md)
+- [Community](misc/community.md)
+- [Troubleshooting](misc/troubleshooting.md)

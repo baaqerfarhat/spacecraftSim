@@ -13,13 +13,24 @@
 
 <!-- [![Codecov](https://codecov.io/gh/AndrejOrsula/space_robotics_bench/graph/badge.svg)](https://codecov.io/gh/AndrejOrsula/space_robotics_bench) -->
 
-**Space Robotics Bench** aims to be a comprehensive collection of environments and tasks for robotics research in the challenging domain of space. The benchmark covers a wide range of applications and scenarios while providing a unified framework for experimenting with new tasks. Although the primary focus is on the application of robot learning techniques, the benchmark is designed to be flexible and extensible to accommodate a variety of research directions and development/validation workflows.
+**Space Robotics Bench (SRB)** is a comprehensive collection of environments and tasks for robotics research in the challenging domain of space. It provides a unified framework for developing and validating autonomous systems under diverse extraterrestrial scenarios. At the same time, its design is flexible and extensible to accommodate a variety of development workflows and research directions beyond Earth.
+
+## Key Features
+
+- **Parallelized Simulation**: Highly parallelized simulation instances for accelerated workflows
+- **Procedural Generation**: On-demand generation of diverse simulation assets and scenes
+- **Domain Randomization**: Extensive randomization for robustness and generalization
+- **Gymnasium API**: Compatibility with standard API and frameworks for robot learning
+- **ROS 2 Interface**: Seamless interoperability with ROS 2 and Space ROS ecosystems
+- **Abstract Architecture**: Flexibility across different robots and space domains
 
 ## Documentation
 
-The full documentation is available in its raw form inside the [docs](docs) directory. The compiled version is hosted [online](https://AndrejOrsula.github.io/space_robotics_bench) in a more accessible format.
+SRB documentation with detailed installation instructions, usage guides, and development resources is available [online](https://AndrejOrsula.github.io/space_robotics_bench).
 
-<a href="https://AndrejOrsula.github.io/space_robotics_bench"><img alt="Documentation" src="https://github.com/AndrejOrsula/awesome-space-robotics/assets/22929099/3c8accf7-5acb-4bcd-9553-bf49cc622abe" width="96" height="96"></a>
+<div align="right">
+<a href="https://AndrejOrsula.github.io/space_robotics_bench"><img alt="Documentation" src="https://github.com/user-attachments/assets/e4f6c735-9831-43c3-9d7e-fb6a5245e762" width="96" height="96"></a>
+</div>
 
 ## License
 

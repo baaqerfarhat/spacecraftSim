@@ -1,36 +1,37 @@
 # System Requirements
 
-<div class="warning">
-This project requires a dedicated NVIDIA GPU with RT Cores (RTX series). Isaac Sim does not support GPUs from other vendors.
-</div>
-
 ## Hardware Requirements
 
-The hardware requirements for running this simulation are inherited from the [Isaac Sim requirements](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/requirements.html). While it is possible to run the simulation on lower-spec systems than those recommended, performance will be significantly reduced.
+The hardware requirements for Space Robotics Bench are inherited from the [Isaac Sim requirements](https://docs.omniverse.nvidia.com/isaacsim/latest/installation/requirements.html). With careful tuning, it is possible to run the included environments on lower-spec systems. However, the performance of some workflows might be limited. The bare minimum requirements are listed below:
 
-| Component    | Minimum Requirement                   |
-| ------------ | ------------------------------------- |
-| Architecture | `x86_64`                              |
-| CPU          | Any smart silicon-rich rock           |
-| RAM          | 16 GB                                 |
-| GPU          | NVIDIA GPU with RT Cores (RTX series) |
-| VRAM         | 4 GB                                  |
-| Disk Space   | 30 GB                                 |
-| Network      | 12 GB (for pulling Docker images)     |
+| Component  | Requirement |
+| ---------- | :---------: |
+| CPU        |   x86_64    |
+| GPU        | NVIDIA RTX  |
+| RAM        |    16 GB    |
+| VRAM       |    4 GB     |
+| Disk Space |    32 GB    |
+
+<div class="warning">
+
+This project requires a dedicated NVIDIA GPU with RT Cores (RTX series). Isaac Sim does not support GPUs from other vendors (AMD, Intel) or older NVIDIA GPUs without RT Cores.
+
+</div>
 
 ## Software Requirements
 
-The following software requirements are essential for running the simulation. Other operating systems may work, but significant adjustments may be required.
+A Linux-based OS with an appropriate NVIDIA driver is required to use Space Robotics Bench. Other operating systems might be functional, but they are not officially supported. Please let us know if you confirm functionality on other non-listed systems.
 
-| Component     | Requirement                                         |
-| ------------- | --------------------------------------------------- |
-| OS            | Linux-based distribution (e.g., Ubuntu 22.04/24.04) |
-| NVIDIA Driver | 535.183.01 (tested; other versions may work)        |
+| Component                |  Requirement   |
+| ------------------------ | :------------: |
+| OS (Native Installation) |  Ubuntu 22.04  |
+| OS (Docker Installation) | Linux with X11 |
+| NVIDIA Driver            |  >=535,\<560   |
 
-### Additional Docker Requirements
+### NVIDIA Driver
 
-The current setup requires the X11 window manager to enable running GUI from within the Docker container. Other window managers may work, but significant adjustments may be required.
+> Official instructions: [Driver Installation Guide — Choose an Installation Method](https://docs.nvidia.com/datacenter/tesla/driver-installation-guide/index.html#choose-an-installation-method)
 
-| Component      | Requirement |
-| -------------- | ----------- |
-| Window Manager | X11         |
+Install the NVIDIA driver by following the official instructions above or through your distribution package manager. Although [Isaac Sim specifies `535.129.03` as the recommended version](https://docs.isaacsim.omniverse.nvidia.com/4.5.0/installation/requirements.html#driver-requirements), newer drivers should also be compatible.
+
+## ... continue with [Installation](./install.md)

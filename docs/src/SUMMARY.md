@@ -4,59 +4,81 @@ ______________________________________________________________________
 
 # Overview
 
-- [Environments](overview/envs/README.md)
-  - [Mobile](overview/envs/mobile.md)
-    - [Wheeled](overview/envs/mobile_wheeled.md)
-    - [Aerial](overview/envs/mobile_aerial.md)
-    - [Spacecraft](<>)
-  - [Manipulation](overview/envs/manipulation.md)
-  - [Mobile Manipulation](<>)
-    - [Planetary](<>)
-    - [Orbital](<>)
-- [Integrations](overview/integrations/README.md)
-  - [Reinforcement Learning](<>)
-  - [Imitation Learning & Offline RL](<>)
-  - [ROS 2](overview/integrations/ros2.md)
+- [Environments](envs/index.md)
+  - [Manipulation](envs/manipulation.md)
+  - [Mobile Robotics](envs/mobile_robotics.md)
+  - [Mobile Manipulation](envs/mobile_manipulation.md)
+- [Robots](robots/index.md)
+  - [Manipulators](robots/manipulators.md)
+  - [Mobile Robots](robots/mobile_robots.md)
+  - [Mobile Manipulators](robots/mobile_manipulators.md)
+- [Integrations & Interfaces](integrations/index.md)
+  - [ROS 2 & Space ROS](integrations/ros2.md)
+  - [Reinforcement Learning](integrations/reinforcement_learning.md)
+  - [Imitation Learning](<>)
+  - [Extended Reality](<>)
+
+______________________________________________________________________
 
 # Getting Started
 
 - [System Requirements](getting_started/requirements.md)
-- [Installation](getting_started/installation/README.md)
-  - [Local](<>)
-  - [Docker](getting_started/installation/docker.md)
-  - [Apptainer/Singularity](<>)
-- [Basic Usage](getting_started/usage.md)
-
-# Instructions
-
-- [Benchmark](instructions/benchmark/README.md)
-  - [Parallel Environments](instructions/benchmark/parallel_envs.md)
-  - [Random and Zero Agents](instructions/benchmark/random_zero_agents.md)
-  - [Visual Observations](instructions/benchmark/visual_observations.md)
-  - [Graphical User Interface](instructions/benchmark/gui.md)
-  - [Configuration](instructions/benchmark/cfg.md)
-- [Workflows](instructions/workflows/README.md)
-  - [ROS 2](instructions/workflows/ros2.md)
-  - [Stable Baselines3](<>)
-  - [DreamerV3](<>)
-  - [Robomimic](<>)
+- [Installation](getting_started/install.md)
+  - [Native](getting_started/install_native.md)
+  - [Docker (Recommended)](getting_started/install_docker.md)
+  - [Apptainer/Singularity](getting_started/install_apptainer.md)
+- [Basic Usage](getting_started/basic_usage.md)
+- [Workflows](workflows/index.md)
+  - [ROS 2](workflows/ros2.md)
+  - [Reinforcement Learning](workflows/reinforcement_learning.md)
+  - [Imitation Learning](<>)
   - [Sim-to-Real](<>)
-- [Utilities](instructions/utils/README.md)
-  - [Clean the Assets Cache](instructions/utils/clean_cache.md)
 
-# Development
+# Configuration
 
-- [Development Environment](development/dev_env/README.md)
-  - [IDE Configuration](<>)
-  - [Docker](development/dev_env/docker.md)
-  - [Dev Container](development/dev_env/dev_container.md)
-- [New Assets](development/new_assets/README.md)
-  - [Datasets](<>)
-  - [Procedural Assets with Blender](development/new_assets/procgen.md)
-- [New Environments](development/new_envs.md)
+- [Environment Configuration](config/env_cfg.md)
+  - [Parallelism](config/parallelism.md)
+  - [Domain](config/domain.md)
+  - [Robot](config/robot.md)
+  - [Particles](config/particles.md)
+- [Agent Configuration](config/agent_cfg.md)
+
+# Reference
+
+- [Command Line Interface](reference/cli.md)
+  - [List Assets and Tasks](reference/cli_ls.md)
+  - [Zero Agent](reference/cli_agent_zero.md)
+  - [Random Agent](reference/cli_agent_rand.md)
+  - [Teleoperate Agent](reference/cli_agent_teleop.md)
+  - [ROS 2 Agent](reference/cli_agent_ros.md)
+  - [Train Agent](reference/cli_agent_train.md)
+  - [Evaluate Agent](reference/cli_agent_eval.md)
+  - [Collect Demonstrations](<>)
+  - [Learn from Demonstrations](<>)
+  - [Enter Python REPL](reference/cli_repl.md)
+- [Graphical User Interface](reference/gui.md)
 
 ______________________________________________________________________
 
-[Troubleshooting](misc/troubleshooting.md)
+# Development
+
+- [IDE Configuration](development/ide_cfg.md)
+- [Dev Container](development/devcontainer.md)
+- [Testing](development/testing.md)
+- [Documentation](development/documentation.md)
+- [Utilities](development/utilities.md)
+  - [Update Assets](development/update_assets.md)
+  - [Clean Cache](development/clean_cache.md)
+
+# Contributing
+
+- [New Assets](contributing/new_assets.md)
+- [New Tasks](contributing/new_tasks.md)
+
+______________________________________________________________________
+
 [Attributions](misc/attributions.md)
 [Contributors](misc/contributors.md)
+[Citation](misc/citation.md)
+[Community](misc/community.md)
+[Troubleshooting](misc/troubleshooting.md)

@@ -1,6 +1,6 @@
 [book]
 title = "Space Robotics Bench"
-description = "Comprehensive benchmark for space robotics"
+description = "A comprehensive collection of environments and tasks for robotics research in space"
 authors = ["Andrej Orsula"]
 language = "en"
 
