@@ -1,14 +1,7 @@
 from dataclasses import MISSING
 
 from srb import assets
-from srb.core.asset import (
-    Articulation,
-    ArticulationCfg,
-    AssetVariant,
-    Manipulator,
-    RigidObject,
-    RigidObjectCfg,
-)
+from srb.core.asset import Articulation, AssetVariant, Manipulator, RigidObject
 from srb.core.env import BaseEventCfg, BaseSceneCfg, DirectEnv, DirectEnvCfg, ViewerCfg
 from srb.core.manager import EventTermCfg, SceneEntityCfg
 from srb.core.marker import FRAME_MARKER_SMALL_CFG
@@ -24,7 +17,7 @@ from srb.utils.math import combine_frame_transforms_tuple, deg_to_rad
 
 
 @configclass
-class ManipulatorSceneCfg(BaseSceneCfg):
+class ManipulationSceneCfg(BaseSceneCfg):
     env_spacing = 4.0
 
     ## Sensors
@@ -45,12 +38,12 @@ class ManipulatorSceneCfg(BaseSceneCfg):
 
 
 @configclass
-class ManipulatorEventCfg(BaseEventCfg):
+class ManipulationEventCfg(BaseEventCfg):
     randomize_robot_joints: EventTermCfg = EventTermCfg(
         func=reset_joints_by_offset,
         mode="reset",
         params={
-            "asset_cfg": SceneEntityCfg("robot", joint_names=".*"),
+            "asset_cfg": SceneEntityCfg("robot"),
             "position_range": (-deg_to_rad(5.0), deg_to_rad(5.0)),
             "velocity_range": (0.0, 0.0),
         },
@@ -58,16 +51,16 @@ class ManipulatorEventCfg(BaseEventCfg):
 
 
 @configclass
-class ManipulatorEnvCfg(DirectEnvCfg):
+class ManipulationEnvCfg(DirectEnvCfg):
     ## Assets
     robot: Manipulator | AssetVariant = assets.Franka()
     _robot: Manipulator = MISSING  # type: ignore
 
     ## Scene
-    scene: ManipulatorSceneCfg = ManipulatorSceneCfg()
+    scene: ManipulationSceneCfg = ManipulationSceneCfg()
 
     ## Events
-    events: ManipulatorEventCfg = ManipulatorEventCfg()
+    events: ManipulationEventCfg = ManipulationEventCfg()
 
     ## Time
     env_rate: float = 1.0 / 150.0
@@ -75,7 +68,7 @@ class ManipulatorEnvCfg(DirectEnvCfg):
 
     ## Viewer
     viewer: ViewerCfg = ViewerCfg(
-        eye=(2.0, 0.0, 2.0), lookat=(0.0, 0.0, 0.0), origin_type="env"
+        eye=(1.5, 0.0, 1.75), lookat=(0.25, 0.0, 0.0), origin_type="env"
     )
 
     def __post_init__(self):
@@ -122,26 +115,20 @@ class ManipulatorEnvCfg(DirectEnvCfg):
         )
 
 
-class ManipulatorEnv(DirectEnv):
-    cfg: ManipulatorEnvCfg
+class ManipulationEnv(DirectEnv):
+    cfg: ManipulationEnvCfg
 
-    def __init__(self, cfg: ManipulatorEnvCfg, **kwargs):
+    def __init__(self, cfg: ManipulationEnvCfg, **kwargs):
         super().__init__(cfg, **kwargs)
 
         ## Get scene assets
         self._tf_end_effector: FrameTransformer = self.scene["tf_end_effector"]
         self._contacts_robot: ContactSensor = self.scene["contacts_robot"]
         self._end_effector: Articulation | RigidObject | None = (
-            self.scene["end_effector"]
-            if self.cfg._robot.end_effector is not None
-            and isinstance(
-                self.cfg._robot.end_effector.asset_cfg,
-                (RigidObjectCfg, ArticulationCfg),
-            )
-            else None
+            self.scene.articulations.get("end_effector", None)
+            or self.scene.rigid_objects.get("end_effector", None)
+            or None
         )
-        self._contacts_end_effector: ContactSensor | None = (
-            self.scene["contacts_end_effector"]
-            if self.cfg._robot.end_effector is not None
-            else None
+        self._contacts_end_effector: ContactSensor | None = self.scene.sensors.get(  # type: ignore
+            "contacts_end_effector", None
         )

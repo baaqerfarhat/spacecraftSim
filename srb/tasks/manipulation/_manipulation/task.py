@@ -5,10 +5,10 @@ import torch
 from srb._typing import StepReturn
 from srb.core.asset import Articulation
 from srb.core.env import (
-    ManipulatorEnv,
-    ManipulatorEnvCfg,
-    ManipulatorEventCfg,
-    ManipulatorSceneCfg,
+    ManipulationEnv,
+    ManipulationEnvCfg,
+    ManipulationEventCfg,
+    ManipulationSceneCfg,
 )
 from srb.core.sensor import ContactSensor
 from srb.utils.cfg import configclass
@@ -20,17 +20,17 @@ from srb.utils.math import matrix_from_quat, rotmat_to_rot6d, scale_transform
 
 
 @configclass
-class SceneCfg(ManipulatorSceneCfg):
+class SceneCfg(ManipulationSceneCfg):
     pass
 
 
 @configclass
-class EventCfg(ManipulatorEventCfg):
+class EventCfg(ManipulationEventCfg):
     pass
 
 
 @configclass
-class TaskCfg(ManipulatorEnvCfg):
+class TaskCfg(ManipulationEnvCfg):
     ## Scene
     scene: SceneCfg = SceneCfg()
 
@@ -50,7 +50,7 @@ class TaskCfg(ManipulatorEnvCfg):
 ############
 
 
-class Task(ManipulatorEnv):
+class Task(ManipulationEnv):
     cfg: TaskCfg
 
     def __init__(self, cfg: TaskCfg, **kwargs):

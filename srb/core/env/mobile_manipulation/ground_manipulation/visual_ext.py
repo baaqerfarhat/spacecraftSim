@@ -14,11 +14,11 @@ class GroundManipulationEnvVisualExtCfg(VisualExtCfg):
                 prim_path=f"{env_cfg._robot.asset_cfg.prim_path}{('/' + env_cfg._robot.frame_base.prim_relpath) if env_cfg._robot.frame_base.prim_relpath else ''}/camera_scene",
                 offset=CameraCfg.OffsetCfg(
                     convention="world",
-                    pos=(0.0, 7.5, 5.0),
-                    rot=rpy_to_quat(0.0, 30.0, -90.0),
+                    pos=(2.0, 0.0, 1.0),
+                    rot=rpy_to_quat(0.0, 45.0, 180.0),
                 ),
                 spawn=PinholeCameraCfg(
-                    clipping_range=(0.01, 20.0 - 0.01),
+                    clipping_range=(0.01, 5.0 - 0.01),
                 ),
             ),
             "cam_front": CameraCfg(

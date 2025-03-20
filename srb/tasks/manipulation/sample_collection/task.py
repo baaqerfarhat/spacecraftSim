@@ -12,10 +12,10 @@ from srb.core.asset import (
     RigidObjectCfg,
 )
 from srb.core.env import (
-    ManipulatorEnv,
-    ManipulatorEnvCfg,
-    ManipulatorEventCfg,
-    ManipulatorSceneCfg,
+    ManipulationEnv,
+    ManipulationEnvCfg,
+    ManipulationEventCfg,
+    ManipulationSceneCfg,
 )
 from srb.core.manager import EventTermCfg, SceneEntityCfg
 from srb.core.marker import VisualizationMarkers, VisualizationMarkersCfg
@@ -38,12 +38,12 @@ from .asset import select_sample
 
 
 @configclass
-class SceneCfg(ManipulatorSceneCfg):
+class SceneCfg(ManipulationSceneCfg):
     sample: RigidObjectCfg = MISSING  # type: ignore
 
 
 @configclass
-class EventCfg(ManipulatorEventCfg):
+class EventCfg(ManipulationEventCfg):
     randomize_object_state: EventTermCfg = EventTermCfg(
         func=reset_root_state_uniform,
         mode="reset",
@@ -56,9 +56,9 @@ class EventCfg(ManipulatorEventCfg):
 
 
 @configclass
-class TaskCfg(ManipulatorEnvCfg):
+class TaskCfg(ManipulationEnvCfg):
     ## Assets
-    sample: Object | AssetVariant | None = AssetVariant.PROCEDURAL
+    sample: Object | AssetVariant = AssetVariant.PROCEDURAL
 
     ## Scene
     scene: SceneCfg = SceneCfg()
@@ -92,11 +92,7 @@ class TaskCfg(ManipulatorEnvCfg):
             init_state=RigidObjectCfg.InitialStateCfg(pos=(0.55, 0.0, 0.0)),
             activate_contact_sensors=True,
         )
-        self.scene.sample = select_sample(
-            self,
-            init_state=RigidObjectCfg.InitialStateCfg(pos=(0.55, 0.0, 0.0)),
-            activate_contact_sensors=True,
-        ).asset_cfg
+        self.scene.sample = sample.asset_cfg
 
         # Event: Randomize object state
         self.events.randomize_object_state.params["pose_range"] = (
@@ -118,7 +114,7 @@ class TaskCfg(ManipulatorEnvCfg):
 ############
 
 
-class Task(ManipulatorEnv):
+class Task(ManipulationEnv):
     cfg: TaskCfg
 
     def __init__(self, cfg: TaskCfg, **kwargs):
