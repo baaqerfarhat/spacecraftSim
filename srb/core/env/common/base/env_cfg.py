@@ -69,7 +69,8 @@ class BaseEnvCfg:
     ## Scene
     scene: BaseSceneCfg = BaseSceneCfg()
     stack: bool = False
-    env_spacing: float | None = None
+    num_envs: int | None = None
+    spacing: float | None = None
 
     ## Events
     events: BaseEventCfg = BaseEventCfg()
@@ -122,9 +123,11 @@ class BaseEnvCfg:
 
     def __post_init__(self):
         ## Scene
-        if self.env_spacing is None:
-            self.env_spacing = self.scene.env_spacing
-        self.scene.env_spacing = 0.0 if self.stack else self.env_spacing
+        if self.num_envs is not None:
+            self.scene.num_envs = self.num_envs
+        if self.spacing is None:
+            self.spacing = self.scene.env_spacing
+        self.scene.env_spacing = 0.0 if self.stack else self.spacing
 
         ## Assets -> Scene
         self._add_sunlight()
@@ -233,12 +236,12 @@ class BaseEnvCfg:
             type_hints = get_type_hints(self)["scenery"]
 
             ## Attributes
-            assert self.env_spacing is not None
-            size = (self.env_spacing, self.env_spacing)
+            assert self.spacing is not None
+            size = (self.spacing, self.spacing)
             scale = (
-                self.env_spacing,
-                self.env_spacing,
-                0.1 * self.env_spacing,
+                self.spacing,
+                self.spacing,
+                0.1 * self.spacing,
             )
             _dyn_res = max(
                 1,  # Min multiplier
@@ -249,7 +252,7 @@ class BaseEnvCfg:
                         min(
                             8.0,
                             math.pow(
-                                self.env_spacing,
+                                self.spacing,
                                 0.4,  # Exponential scaling
                             ),
                         )
@@ -398,7 +401,7 @@ class BaseEnvCfg:
         robot.asset_cfg.prim_path = prim_path
         setattr(self.scene, robot_name, robot.asset_cfg)
         # Actions
-        for action_key, action_term in robot.action_cfg.__dict__.items():
+        for action_key, action_term in robot.actions.__dict__.items():
             if not isinstance(action_term, ActionTermCfg):
                 continue
             # Ensure the actions terms are applied to the correct asset
@@ -406,7 +409,7 @@ class BaseEnvCfg:
             # Add action terms to the action group
             setattr(self.actions, f"{robot_name}__{action_key}", action_term)
         # Add the command mapping function to the action group
-        map_cmd_to_action_fns.append(robot.action_cfg.map_cmd_to_action)
+        map_cmd_to_action_fns.append(robot.actions.map_cmd_to_action)
 
         ## Extra: Mobile robot - Payload
         if isinstance(robot, MobileRobot):
@@ -459,7 +462,7 @@ class BaseEnvCfg:
                 next(
                     (
                         action_term
-                        for action_term in robot.manipulator.action_cfg.__dict__.values()
+                        for action_term in robot.manipulator.actions.__dict__.values()
                         if isinstance(
                             action_term, DifferentialInverseKinematicsActionCfg
                         )
@@ -494,7 +497,7 @@ class BaseEnvCfg:
             for (
                 action_key,
                 action_term,
-            ) in robot.manipulator.action_cfg.__dict__.items():
+            ) in robot.manipulator.actions.__dict__.items():
                 if not isinstance(action_term, ActionTermCfg):
                     continue
                 # Ensure the actions terms are applied to the correct asset
@@ -502,7 +505,7 @@ class BaseEnvCfg:
                 # Add action terms to the action group
                 setattr(self.actions, f"{manipulator_name}__{action_key}", action_term)
             # Add the command mapping function to the action group
-            map_cmd_to_action_fns.append(robot.manipulator.action_cfg.map_cmd_to_action)
+            map_cmd_to_action_fns.append(robot.manipulator.actions.map_cmd_to_action)
         else:
             self.joint_assemblies.pop(manipulator_name, None)
 
@@ -556,7 +559,7 @@ class BaseEnvCfg:
                     self.scene, end_effector_name, manipulator.end_effector.asset_cfg
                 )
                 # Offset TCP
-                for action_term in manipulator.action_cfg.__dict__.values():
+                for action_term in manipulator.actions.__dict__.values():
                     if isinstance(action_term, DifferentialInverseKinematicsActionCfg):
                         if action_term.body_offset is None:
                             action_term.body_offset = DifferentialInverseKinematicsActionCfg.OffsetCfg(
@@ -577,7 +580,7 @@ class BaseEnvCfg:
                     for (
                         action_key,
                         action_term,
-                    ) in manipulator.end_effector.action_cfg.__dict__.items():
+                    ) in manipulator.end_effector.actions.__dict__.items():
                         if not isinstance(action_term, ActionTermCfg):
                             continue
                         # Ensure the actions terms are applied to the correct asset
@@ -590,7 +593,7 @@ class BaseEnvCfg:
                         )
                     # Add the command mapping function to the action group
                     map_cmd_to_action_fns.append(
-                        manipulator.end_effector.action_cfg.map_cmd_to_action
+                        manipulator.end_effector.actions.map_cmd_to_action
                     )
             else:
                 setattr(self.scene, end_effector_name, None)
@@ -642,16 +645,16 @@ class BaseEnvCfg:
                     _update_simforge_asset(rigid_object_cfg)
 
     def _maybe_add_particles(self):
-        assert self.env_spacing is not None
-        if self._particles and self.env_spacing > 0.0:
+        assert self.spacing is not None
+        if self._particles and self.spacing > 0.0:
             self.scene.particles = AssetBaseCfg(  # type: ignore
                 prim_path="{ENV_REGEX_NS}/particles",
                 spawn=PyramidParticlesSpawnerCfg(
                     ratio=self._particles_ratio,
                     particle_size=self._particles_size,
-                    dim_x=int(self.env_spacing / self._particles_size),
-                    dim_y=int(self.env_spacing / self._particles_size),
-                    dim_z=int(0.5 * self.env_spacing / self._particles_size),
+                    dim_x=int(self.spacing / self._particles_size),
+                    dim_y=int(self.spacing / self._particles_size),
+                    dim_z=int(0.5 * self.spacing / self._particles_size),
                     velocity=((-0.5, 0.5), (-0.5, 0.5), (-0.5, 0.0)),
                     fluid=False,
                     friction=1.0,
