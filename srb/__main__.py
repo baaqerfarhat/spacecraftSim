@@ -126,6 +126,10 @@ def run_agent_with_env(
     else:
         logdir = new_logdir(env_id=env_id, workflow=workflow, root=logdir_root)
 
+    # Update Hydra output directory
+    if not any(arg.startswith("hydra.run.dir=") for arg in forwarded_args):
+        sys.argv.extend([f"hydra.run.dir={logdir.as_posix()}"])
+
     @hydra_task_config(
         task_name=env_id,
         agent_cfg_entry_point=f"{kwargs['algo']}_cfg" if kwargs.get("algo") else None,
@@ -199,7 +203,7 @@ def run_agent_with_env(
                 ) -> tuple[WrapperObsType, SupportsFloat, bool, bool, dict[str, Any]]:  # type: ignore
                     step_return = super().step(action)
                     for interface in self._srb_interfaces:
-                        interface.update(*step_return)
+                        interface.update(*step_return, action=action)
                     return step_return
 
             env = InterfaceWrapper(env)  # type: ignore
@@ -253,12 +257,12 @@ def random_agent(
 
     with torch.inference_mode():
         while sim_app.is_running():
-            actions = torch.from_numpy(env.action_space.sample()).to(
+            action = torch.from_numpy(env.action_space.sample()).to(
                 device=env.unwrapped.device  # type: ignore
             )
-            observation, reward, terminated, truncated, info = env.step(actions)  # type: ignore
+            observation, reward, terminated, truncated, info = env.step(action)  # type: ignore
             logging.trace(
-                f"actions: {actions}\n"
+                f"action: {action}\n"
                 f"observation: {observation}\n"
                 f"reward: {reward}\n"
                 f"terminated: {terminated}\n"
@@ -276,13 +280,13 @@ def zero_agent(
 
     from srb.utils import logging
 
-    actions = torch.zeros(env.action_space.shape, device=env.unwrapped.device)  # type: ignore
+    action = torch.zeros(env.action_space.shape, device=env.unwrapped.device)  # type: ignore
 
     with torch.inference_mode():
         while sim_app.is_running():
-            observation, reward, terminated, truncated, info = env.step(actions)
+            observation, reward, terminated, truncated, info = env.step(action)
             logging.trace(
-                f"actions: {actions}\n"
+                f"action: {action}\n"
                 f"observation: {observation}\n"
                 f"reward: {reward}\n"
                 f"terminated: {terminated}\n"
@@ -337,7 +341,7 @@ def teleop_agent(
         node=ros_node,
         pos_sensitivity=pos_sensitivity,
         rot_sensitivity=rot_sensitivity,
-        action_cfg=env.unwrapped.cfg.actions,  # type: ignore
+        actions=env.unwrapped.cfg.actions,  # type: ignore
     )
 
     # TODO[low]: Add force feedback for haptic teleoperation
@@ -427,7 +431,7 @@ def _teleop_agent_direct(
             twist, event = teleop_interface.advance()
             if invert_controls:
                 twist[:2] *= -1.0
-            actions = env.unwrapped.cfg.actions.map_cmd_to_action(  # type: ignore
+            action = env.unwrapped.cfg.actions.map_cmd_to_action(  # type: ignore
                 torch.from_numpy(twist).to(
                     device=env.unwrapped.device,  # type: ignore
                     dtype=torch.float32,
@@ -439,9 +443,9 @@ def _teleop_agent_direct(
             )
 
             # Step the environment
-            observation, reward, terminated, truncated, info = env.step(actions)
+            observation, reward, terminated, truncated, info = env.step(action)
             logging.trace(
-                f"actions: {actions}\n"
+                f"action: {action}\n"
                 f"observation: {observation}\n"
                 f"reward: {reward}\n"
                 f"terminated: {terminated}\n"
@@ -462,7 +466,7 @@ def _teleop_agent_via_policy(
     sim_app: "SimulationApp",
     teleop_interface: "CombinedTeleopInterface",
     invert_controls: bool,
-    recognized_cmd_keys: Sequence[str] = ("command", "cmd"),
+    recognized_cmd_keys: Sequence[str] = ("command", "_command", "cmd", "_cmd"),
     **kwargs,
 ):
     import torch
@@ -505,6 +509,11 @@ def _teleop_agent_via_policy(
                 ),
                 None,
             )
+            if not self._obs_cmd_key:
+                raise ValueError(
+                    f"Unable to find the command key in the observation space: {recognized_cmd_keys}"
+                )
+
             self._internal_cmd_attr_name = next(
                 (
                     key
@@ -513,15 +522,16 @@ def _teleop_agent_via_policy(
                 ),
                 None,
             )
-            if self._internal_cmd_attr_name:
-                internal_cmd_attr_shape = getattr(
-                    self.env.unwrapped, self._internal_cmd_attr_name
-                ).shape
-                self._is_internal_cmd_attr_per_env = len(
-                    internal_cmd_attr_shape
-                ) == 2 and (
-                    internal_cmd_attr_shape[0] == self.env.unwrapped.cfg.scene.num_envs  # type: ignore
+            if not self._internal_cmd_attr_name:
+                raise ValueError(
+                    "Unable to find the internal command attribute of the environment"
                 )
+            internal_cmd_attr_shape = getattr(
+                self.env.unwrapped, self._internal_cmd_attr_name
+            ).shape
+            self._is_internal_cmd_attr_per_env = len(internal_cmd_attr_shape) == 2 and (
+                internal_cmd_attr_shape[0] == self.env.unwrapped.cfg.scene.num_envs  # type: ignore
+            )
 
         def observation(self, observation: ObsType) -> WrapperObsType:  # type: ignore
             ## Get actions from the teleoperation interface and process them
@@ -593,7 +603,7 @@ def _teleop_agent_via_policy(
 
             observation, reward, terminated, truncated, info = super().step(action)
             logging.trace(
-                f"actions: {action}\n"
+                f"action: {action}\n"
                 f"observation: {observation}\n"
                 f"reward: {reward}\n"
                 f"terminated: {terminated}\n"
@@ -659,13 +669,16 @@ def ros_agent(
         else:
             should_update_interface = True
 
+    # Set up ROS interfaces for actions
+    ros_interface.setup_action_sub()
+
     ## Run the environment with ROS interface
     with torch.inference_mode():
         while sim_app.is_running():
-            actions = ros_interface.actions
-            observation, reward, terminated, truncated, info = env.step(actions)  # type: ignore
+            action = ros_interface.action
+            observation, reward, terminated, truncated, info = env.step(action)  # type: ignore
             logging.trace(
-                f"actions: {actions}\n"
+                f"action: {action}\n"
                 f"observation: {observation}\n"
                 f"reward: {reward}\n"
                 f"terminated: {terminated}\n"
@@ -730,7 +743,7 @@ def eval_agent(algo: str, **kwargs):
 
 ### List ###
 def list_registered(
-    category: str | Sequence[str], show_all: bool, forwarded_args: Sequence[str] = ()
+    category: str | Sequence[str], show_hidden: bool, forwarded_args: Sequence[str] = ()
 ):
     from srb.core.app import AppLauncher
 
@@ -788,11 +801,11 @@ def list_registered(
 
         table = Table(title="Assets of the Space Robotics Bench")
         table.add_column("#", justify="right", style="cyan", no_wrap=True)
-        table.add_column("Type", justify="center", style="magenta", no_wrap=True)
-        table.add_column("Subtype", justify="center", style="red", no_wrap=True)
-        table.add_column("Parent Class", justify="left", style="green", no_wrap=True)
-        table.add_column("Asset Cfg", justify="left", style="yellow")
         table.add_column("Name", justify="left", style="blue", no_wrap=True)
+        table.add_column("Type", justify="left", style="magenta", no_wrap=True)
+        table.add_column("Subtype", justify="left", style="red", no_wrap=True)
+        table.add_column("Parent Class", justify="left", style="green", no_wrap=True)
+        table.add_column("Asset Config", justify="left", style="yellow")
         table.add_column("Path", justify="left", style="white")
         i = 0
         if EntityToList.SCENERY in category:
@@ -819,11 +832,11 @@ def list_registered(
                         asset_module_relpath = path.join("EXT", asset_module_path.name)
                     table.add_row(
                         str(i),
+                        f"[link=vscode://file/{inspect.getabsfile(asset_class)}:{inspect.getsourcelines(asset_class)[1]}]{asset_name}[/link]",
                         str(asset_type),
                         str(asset_subtype),
                         f"[link=vscode://file/{inspect.getabsfile(parent_class)}:{inspect.getsourcelines(parent_class)[1]}]{parent_class.__name__}[/link]",
                         f"[link=vscode://file/{inspect.getabsfile(asset_cfg_class)}:{inspect.getsourcelines(asset_cfg_class)[1]}]{asset_cfg_class.__name__}[/link]",
-                        f"[link=vscode://file/{inspect.getabsfile(asset_class)}:{inspect.getsourcelines(asset_class)[1]}]{asset_name}[/link]",
                         f"[link=vscode://file/{asset_module_path}]{asset_module_relpath}[/link]",
                         end_section=(j + 1) == len(asset_classes),
                     )
@@ -851,11 +864,11 @@ def list_registered(
                         asset_module_relpath = path.join("EXT", asset_module_path.name)
                     table.add_row(
                         str(i),
+                        f"[link=vscode://file/{inspect.getabsfile(asset_class)}:{inspect.getsourcelines(asset_class)[1]}]{asset_name}[/link]",
                         str(asset_type),
                         str(asset_subtype),
                         f"[link=vscode://file/{inspect.getabsfile(parent_class)}:{inspect.getsourcelines(parent_class)[1]}]{parent_class.__name__}[/link]",
                         f"[link=vscode://file/{inspect.getabsfile(asset_cfg_class)}:{inspect.getsourcelines(asset_cfg_class)[1]}]{asset_cfg_class.__name__}[/link]",
-                        f"[link=vscode://file/{inspect.getabsfile(asset_class)}:{inspect.getsourcelines(asset_class)[1]}]{asset_name}[/link]",
                         f"[link=vscode://file/{asset_module_path}]{asset_module_relpath}[/link]",
                         end_section=(j + 1) == len(asset_classes),
                     )
@@ -883,13 +896,13 @@ def list_registered(
                         asset_module_relpath = path.join("EXT", asset_module_path.name)
                     table.add_row(
                         str(i),
+                        f"[link=vscode://file/{inspect.getabsfile(asset_class)}:{inspect.getsourcelines(asset_class)[1]}]{asset_name}[/link]",
                         str(asset_type),
                         str(asset_subtype),
                         f"[link=vscode://file/{inspect.getabsfile(parent_class)}:{inspect.getsourcelines(parent_class)[1]}]{parent_class.__name__}[/link]",
                         f"[link=vscode://file/{inspect.getabsfile(asset_cfg_class)}:{inspect.getsourcelines(asset_cfg_class)[1]}]{asset_cfg_class.__name__}[/link]"
                         if asset_cfg_class is not _MISSING_TYPE
                         else "<DYNAMIC>",
-                        f"[link=vscode://file/{inspect.getabsfile(asset_class)}:{inspect.getsourcelines(asset_class)[1]}]{asset_name}[/link]",
                         f"[link=vscode://file/{asset_module_path}]{asset_module_relpath}[/link]",
                         end_section=(j + 1) == len(asset_classes),
                     )
@@ -897,7 +910,7 @@ def list_registered(
 
     # Print table for action groups
     if EntityToList.ACTION in category:
-        from srb.core.action import ActionGroupRegistry
+        from srb.core.action import ActionGroupRegistry, canonicalize_action_group_name
         from srb.core.action import group as srb_action_groups
 
         table = Table(title="Action Groups of the Space Robotics Bench")
@@ -906,7 +919,9 @@ def list_registered(
         table.add_column("Path", justify="left", style="white")
 
         for i, action_group_class in enumerate(ActionGroupRegistry.registry, 1):
-            action_group_name = convert_to_snake_case(action_group_class.__name__)
+            action_group_name = canonicalize_action_group_name(
+                action_group_class.__name__
+            )
             action_group_path = Path(
                 inspect.getabsfile(
                     importlib.import_module(action_group_class.__module__)
@@ -938,8 +953,8 @@ def list_registered(
         table.add_column("Config", justify="left", style="yellow")
         table.add_column("Path", justify="left", style="white")
         i = 0
-        for task_id in sorted(get_srb_tasks()):
-            if not show_all and task_id.endswith("_visual"):
+        for task_id in get_srb_tasks():
+            if not show_hidden and task_id.endswith("_visual"):
                 continue
             i += 1
             env = gymnasium.registry[task_id]
@@ -1219,8 +1234,8 @@ def parse_cli_args() -> argparse.Namespace:
     )
     list_parser.add_argument(
         "-a",
-        "--show_all",
-        help='Show all registered entities ("*_visual" environments are hidden by default)',
+        "--show_hidden",
+        help='Show hidden entities ("*_visual" environments are hidden by default)',
         action="store_true",
         default=False,
     )
