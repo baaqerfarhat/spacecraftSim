@@ -144,6 +144,7 @@ class Task(OrbitalEnv):
             # Root
             tf_pos_robot=self._robot.data.root_pos_w,
             vel_lin_robot=self._robot.data.root_lin_vel_b,
+            vel_ang_robot=self._robot.data.root_ang_vel_b,
             # Transforms (world frame)
             tf_pos_objs=self._objs.data.object_com_pos_w,
             tf_pos_target=self._tf_pos_target,
@@ -167,6 +168,7 @@ def _compute_step_return(
     # Root
     tf_pos_robot: torch.Tensor,
     vel_lin_robot: torch.Tensor,
+    vel_ang_robot: torch.Tensor,
     # Transforms (world frame)
     tf_pos_objs: torch.Tensor,
     tf_pos_target: torch.Tensor,
@@ -202,6 +204,12 @@ def _compute_step_return(
         torch.square(act_current - act_previous), dim=1
     )
 
+    # Penalty: Angular velocity
+    WEIGHT_ANGULAR_VELOCITY = -0.1
+    penalty_angular_velocity = WEIGHT_ANGULAR_VELOCITY * torch.norm(
+        vel_ang_robot, dim=-1
+    )
+
     # Reward: Distance | Robot <--> Object
     WEIGHT_DISTANCE_ROBOT_TO_OBJ = 1.0
     reward_distance_robot_to_nearest_obj = WEIGHT_DISTANCE_ROBOT_TO_OBJ * torch.norm(
@@ -230,6 +238,7 @@ def _compute_step_return(
         {
             "state": {
                 "vel_lin_robot": vel_lin_robot,
+                "vel_ang_robot": vel_ang_robot,
                 "tf_pos_robot_to_nearest_obj": tf_pos_robot_to_nearest_obj,
                 "tf_pos_robot_to_target": tf_pos_robot_to_target,
             },
@@ -244,6 +253,7 @@ def _compute_step_return(
         },
         {
             "penalty_action_rate": penalty_action_rate,
+            "penalty_angular_velocity": penalty_angular_velocity,
             "reward_distance_robot_to_nearest_obj": reward_distance_robot_to_nearest_obj,
             "penalty_distance_robot_to_target": penalty_distance_robot_to_target,
         },
