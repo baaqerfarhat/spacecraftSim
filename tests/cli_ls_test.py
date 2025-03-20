@@ -13,7 +13,7 @@ def test_cli_ls():
         "-m",
         "srb",
         "ls",
-        "--show_all",
+        "--show_hidden",
     )
 
     try:
