@@ -47,7 +47,6 @@ class SceneCfg(GroundManipulationSceneCfg):
         ),
         init_state=AssetBaseCfg.InitialStateCfg(pos=(0.0, 0.0, 0.5)),
     )
-    # instrument: AssetBaseCfg = assets.BeneficiationUnit().asset_cfg
 
 
 @configclass
@@ -59,7 +58,7 @@ class EventCfg(GroundManipulationEventCfg):
 class TaskCfg(GroundManipulationEnvCfg):
     ## Assets
     robot: GroundManipulator | AssetVariant = assets.GenericGroundManipulator(
-        mobile_base=assets.AnymalD(payload=assets.CargoBay()),
+        mobile_base=assets.Spot(payload=assets.CargoBay()),
         manipulator=assets.Franka(end_effector=assets.Scoop()),
     )
     robot.asset_cfg.init_state.pos = (-1.0, 2.0, 1.0)  # type: ignore
@@ -83,7 +82,7 @@ class TaskCfg(GroundManipulationEnvCfg):
 
         # Scene: Regolith
         _regolith_dim = int(
-            self.env_spacing / self.scene.regolith.spawn.particle_size  # type: ignore
+            self.spacing / self.scene.regolith.spawn.particle_size  # type: ignore
         )
         self.scene.regolith.spawn.dim_x = _regolith_dim  # type: ignore
         self.scene.regolith.spawn.dim_y = _regolith_dim  # type: ignore
