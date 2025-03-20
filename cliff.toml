@@ -83,4 +83,3 @@ sort_commits = "newest"
 [remote.github]
 owner = "AndrejOrsula"
 repo = "space_robotics_bench"
-token = ""
