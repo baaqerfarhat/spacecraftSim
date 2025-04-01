@@ -22,7 +22,7 @@ The mobile robotics environments of the Space Robotics Bench focus on tasks invo
 
 ## Orbital Environments
 
-### Orbital Evasion (`landing`)
+### Landing (`landing`)
 
 > Landing of spacecraft on planetary surfaces with varying terrain and obstacles
 
