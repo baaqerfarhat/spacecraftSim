@@ -21,7 +21,7 @@ from .asset import select_obstacle
 
 @configclass
 class SceneCfg(OrbitalSceneCfg):
-    env_spacing = 0.0  # NOTE: Needs to be 0.0 due to target position being global
+    env_spacing = 12.0
 
     objs: RigidObjectCollectionCfg = RigidObjectCollectionCfg(
         rigid_objects=MISSING,  # type: ignore
