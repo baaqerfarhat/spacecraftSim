@@ -23,6 +23,7 @@ VOLUMES_ROOT="${SCRATCH:-${HOME}}/volumes/${PROJECT_NAME}"
 SINGULARITY_VOLUMES=(
     ## Isaac Sim
     # Data
+    "${VOLUMES_ROOT}/.nvidia-omniverse/data/ov:/root/.local/share/ov/data:rw"
     "${VOLUMES_ROOT}/.nvidia-omniverse/data/isaac-sim:/root/isaac-sim/kit/data:rw"
     # Cache
     "${VOLUMES_ROOT}/.cache/isaac-sim:/root/isaac-sim/kit/cache:rw"

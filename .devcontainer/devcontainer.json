@@ -27,6 +27,7 @@
 		"type=bind,source=${localEnv:TMPDIR:/tmp}/xauth_docker_vsc_${localWorkspaceFolderBasename},target=${localEnv:TMPDIR:/tmp}/xauth_docker_vsc_${localWorkspaceFolderBasename}",
 		/// Isaac Sim
 		// Data
+		"type=bind,source=${localEnv:HOME}/.nvidia-omniverse/data/ov,target=/root/.local/share/ov/data",
 		"type=bind,source=${localEnv:HOME}/.nvidia-omniverse/data/isaac-sim,target=/root/isaac-sim/kit/data",
 		// Cache
 		"type=bind,source=${localEnv:HOME}/.cache/isaac-sim,target=/root/isaac-sim/kit/cache",

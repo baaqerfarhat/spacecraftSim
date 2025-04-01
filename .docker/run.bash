@@ -44,6 +44,7 @@ DOCKER_VOLUMES=(
     "/dev:/dev"
     ## Isaac Sim
     # Data
+    "${HOME}/.nvidia-omniverse/data/ov:/root/.local/share/ov/data:rw"
     "${HOME}/.nvidia-omniverse/data/isaac-sim:/root/isaac-sim/kit/data:rw"
     # Cache
     "${HOME}/.cache/isaac-sim:/root/isaac-sim/kit/cache:rw"
