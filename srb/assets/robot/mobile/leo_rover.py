@@ -1,4 +1,4 @@
-from srb.core.action import ActionGroup, JointVelocityActionGroup
+from srb.core.action import ActionGroup, WheeledDriveActionCfg, WheeledDriveActionGroup
 from srb.core.actuator import ImplicitActuatorCfg
 from srb.core.asset import ArticulationCfg, Frame, Transform, WheeledRobot
 from srb.core.sim import (
@@ -16,8 +16,8 @@ class LeoRover(WheeledRobot):
     asset_cfg: ArticulationCfg = ArticulationCfg(
         prim_path="{ENV_REGEX_NS}/leo_rover",
         spawn=UsdFileCfg(
-            usd_path=SRB_ASSETS_DIR_SRB_ROBOT.joinpath("fictionlab")
-            .joinpath("leo_rover.usd")
+            usd_path=SRB_ASSETS_DIR_SRB_ROBOT.joinpath("rover")
+            .joinpath("leo_rover.usdc")
             .as_posix(),
             activate_contact_sensors=True,
             collision_props=CollisionPropertiesCfg(
@@ -36,46 +36,59 @@ class LeoRover(WheeledRobot):
         ),
         init_state=ArticulationCfg.InitialStateCfg(),
         actuators={
-            "base_drive": ImplicitActuatorCfg(
-                joint_names_expr=["wheel_.*_joint"],
-                velocity_limit=6.0,
-                effort_limit=12.0,
-                stiffness=100.0,
-                damping=4000.0,
-            ),
-            "passive_joints": ImplicitActuatorCfg(
-                joint_names_expr=["rocker_.*_joint"],
-                velocity_limit=15.0,
-                effort_limit=0.0,
+            "drive": ImplicitActuatorCfg(
+                joint_names_expr=["wheel_joint_.*"],
+                effort_limit=80.0,
+                velocity_limit=30.0,
                 stiffness=0.0,
-                damping=0.0,
+                damping=5000.0,
+            ),
+            "rocker": ImplicitActuatorCfg(
+                joint_names_expr=["rocker_joint_.*"],
+                velocity_limit=2.0,
+                effort_limit=500.0,
+                damping=0.5,
+                stiffness=2.0,
             ),
         },
     )
 
     ## Actions
-    actions: ActionGroup = JointVelocityActionGroup()
+    actions: ActionGroup = WheeledDriveActionGroup(
+        WheeledDriveActionCfg(
+            asset_name="robot",
+            wheelbase=(0.2975, 0.3587),
+            wheel_radius=0.065,
+            drive_joint_names=[
+                "wheel_joint_FR",
+                "wheel_joint_FL",
+                "wheel_joint_RR",
+                "wheel_joint_RL",
+            ],
+            scale=0.4,
+        )
+    )
 
     ## Frames
-    frame_base: Frame = Frame(prim_relpath="body")
+    frame_base: Frame = Frame(prim_relpath="chassis")
     frame_payload_mount: Frame = Frame(
-        prim_relpath="body",
+        prim_relpath="chassis",
         offset=Transform(
-            pos=(0.0, -0.125, 0.07),
-            rot=rpy_to_quat(0.0, 0.0, 90.0),
+            pos=(0.0, 0.0915, 0.2),
+            rot=rpy_to_quat(0.0, 0.0, -90.0),
         ),
     )
     frame_manipulator_mount: Frame = Frame(
-        prim_relpath="body",
+        prim_relpath="chassis",
         offset=Transform(
-            pos=(0.0, 0.1, 0.07),
-            rot=rpy_to_quat(0.0, 0.0, 90.0),
+            pos=(0.0, -0.088, 0.2),
+            rot=rpy_to_quat(0.0, 0.0, -90.0),
         ),
     )
     frame_front_camera: Frame = Frame(
-        prim_relpath="body/camera_front",
+        prim_relpath="chassis/camera_front",
         offset=Transform(
-            pos=(-0.7675, 0.0, 1.9793),
-            rot=rpy_to_quat(0.0, 15.0, -90.0),
+            pos=(0.0, -0.098, 0.157),
+            rot=rpy_to_quat(0.0, 0.0, -90.0),
         ),
     )

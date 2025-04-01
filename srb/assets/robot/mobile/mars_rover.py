@@ -1,8 +1,4 @@
-from srb.core.action import (
-    ActionGroup,
-    WheeledRoverActionGroup,
-    WheeledRoverDriveActionCfg,
-)
+from srb.core.action import ActionGroup, WheeledDriveActionCfg, WheeledDriveActionGroup
 from srb.core.actuator import ImplicitActuatorCfg
 from srb.core.asset import ArticulationCfg, Frame, Transform, WheeledRobot
 from srb.core.sim import (
@@ -20,9 +16,7 @@ class MarsRover(WheeledRobot):
     asset_cfg: ArticulationCfg = ArticulationCfg(
         prim_path="{ENV_REGEX_NS}/mars_rover",
         spawn=UsdFileCfg(
-            usd_path=SRB_ASSETS_DIR_SRB_ROBOT.joinpath("mars_rover")
-            .joinpath("rover.usd")
-            .as_posix(),
+            usd_path=SRB_ASSETS_DIR_SRB_ROBOT.joinpath("PRIVATE").as_posix(),
             activate_contact_sensors=True,
             collision_props=CollisionPropertiesCfg(
                 contact_offset=0.02, rest_offset=0.005
@@ -79,13 +73,18 @@ class MarsRover(WheeledRobot):
     )
 
     ## Actions
-    actions: ActionGroup = WheeledRoverActionGroup(
-        WheeledRoverDriveActionCfg(
+    actions: ActionGroup = WheeledDriveActionGroup(
+        WheeledDriveActionCfg(
             asset_name="robot",
             wheelbase=(0.849, 0.77),
             wheelbase_mid=0.894,
             wheel_radius=0.1,
-            steering_joint_names=[".*Steer_Revolute"],
+            steering_joint_names=[
+                "FL_Steer_Revolute",
+                "FR_Steer_Revolute",
+                "RL_Steer_Revolute",
+                "RR_Steer_Revolute",
+            ],
             drive_joint_names=[
                 "FL_Drive_Continous",
                 "FR_Drive_Continous",

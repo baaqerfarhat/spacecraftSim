@@ -1,12 +1,12 @@
 from srb.assets.object.tool import FrankaHand
 from srb.core.action import (
     ActionGroup,
+    DifferentialIKControllerCfg,
     DifferentialInverseKinematicsActionCfg,
     InverseKinematicsActionGroup,
 )
 from srb.core.actuator import ImplicitActuatorCfg
 from srb.core.asset import ArticulationCfg, Frame, SerialManipulator, Tool, Transform
-from srb.core.controller import DifferentialIKControllerCfg
 from srb.core.sim import (
     ArticulationRootPropertiesCfg,
     CollisionPropertiesCfg,
@@ -25,8 +25,8 @@ class Franka(SerialManipulator):
         prim_path="{ENV_REGEX_NS}/franka",
         ## Spawner loads a static USD file
         spawn=UsdFileCfg(
-            usd_path=SRB_ASSETS_DIR_SRB_ROBOT.joinpath("franka_emika")
-            .joinpath("panda_arm_instanceable.usd")
+            usd_path=SRB_ASSETS_DIR_SRB_ROBOT.joinpath("manipulator")
+            .joinpath("franka_arm.usdz")
             .as_posix(),
             ### ANCHOR_END: example_p1 (docs)
             activate_contact_sensors=True,

@@ -11,13 +11,13 @@ from srb.utils.math import rpy_to_quat
 from srb.utils.path import SRB_ASSETS_DIR_SRB_ROBOT
 
 
-class Perseverance(WheeledRobot):
+class Pragyan(WheeledRobot):
     ## Model
     asset_cfg: ArticulationCfg = ArticulationCfg(
-        prim_path="{ENV_REGEX_NS}/perseverance",
+        prim_path="{ENV_REGEX_NS}/pragyan",
         spawn=UsdFileCfg(
             usd_path=SRB_ASSETS_DIR_SRB_ROBOT.joinpath("rover")
-            .joinpath("perseverance.usdz")
+            .joinpath("pragyan.usdz")
             .as_posix(),
             activate_contact_sensors=True,
             collision_props=CollisionPropertiesCfg(
@@ -37,32 +37,25 @@ class Perseverance(WheeledRobot):
         init_state=ArticulationCfg.InitialStateCfg(),
         actuators={
             "drive_joints": ImplicitActuatorCfg(
-                joint_names_expr=["drive_joint.*"],
+                joint_names_expr=["wheel_drive_joint_.*"],
                 velocity_limit=40.0,
                 effort_limit=150.0,
-                damping=25000.0,
+                damping=5000.0,
                 stiffness=0.0,
             ),
-            "steer_joints": ImplicitActuatorCfg(
-                joint_names_expr=["steer_joint.*"],
-                velocity_limit=2.0,
-                effort_limit=400.0,
-                damping=200.0,
-                stiffness=500.0,
-            ),
             "rocker_joints": ImplicitActuatorCfg(
-                joint_names_expr=["suspension_joint_rocker.*"],
+                joint_names_expr=["rocker_joint_.*"],
                 velocity_limit=5.0,
                 effort_limit=2500.0,
                 damping=400.0,
-                stiffness=4000.0,
+                stiffness=1000.0,
             ),
             "bogie_joints": ImplicitActuatorCfg(
-                joint_names_expr=["suspension_joint_bogie.*"],
+                joint_names_expr=["boogie_joint_.*"],
                 velocity_limit=4.0,
                 effort_limit=500.0,
-                damping=25.0,
-                stiffness=200.0,
+                damping=200.0,
+                stiffness=250.0,
             ),
         },
     )
@@ -71,22 +64,15 @@ class Perseverance(WheeledRobot):
     actions: ActionGroup = WheeledDriveActionGroup(
         WheeledDriveActionCfg(
             asset_name="robot",
-            wheelbase=(2.26, 2.14764),
-            wheelbase_mid=2.39164,
-            wheel_radius=0.26268,
-            steering_joint_names=[
-                "steer_joint_front_left",
-                "steer_joint_front_right",
-                "steer_joint_rear_left",
-                "steer_joint_rear_right",
-            ],
+            wheelbase=(0.8533, 0.945),
+            wheel_radius=0.1125,
             drive_joint_names=[
-                "drive_joint_front_left",
-                "drive_joint_front_right",
-                "drive_joint_mid_left",
-                "drive_joint_mid_right",
-                "drive_joint_rear_left",
-                "drive_joint_rear_right",
+                "wheel_drive_joint_lf",
+                "wheel_drive_joint_rf",
+                "wheel_drive_joint_lm",
+                "wheel_drive_joint_rm",
+                "wheel_drive_joint_lr",
+                "wheel_drive_joint_rr",
             ],
             scale=1.0,
         )
@@ -97,22 +83,21 @@ class Perseverance(WheeledRobot):
     frame_payload_mount: Frame = Frame(
         prim_relpath="body",
         offset=Transform(
-            pos=(0.0, 0.0, 1.25),
+            pos=(0.0, 0.285, 0.379),
             rot=rpy_to_quat(0.0, 0.0, -90.0),
         ),
     )
     frame_manipulator_mount: Frame = Frame(
         prim_relpath="body",
         offset=Transform(
-            pos=(0.0, -0.875, 1.25),
+            pos=(0.008, -0.31175, 0.389),
             rot=rpy_to_quat(0.0, 0.0, -90.0),
         ),
     )
     frame_front_camera: Frame = Frame(
         prim_relpath="body/camera_front",
         offset=Transform(
-            # translation=(-0.3437, -0.8537, 1.9793),  # Left Navcam
-            pos=(-0.7675, -0.8537, 1.9793),  # Right Navcam
-            rot=rpy_to_quat(0.0, 15.0, -90.0),
+            pos=(0.1961, -0.41564, 0.4044),
+            rot=rpy_to_quat(0.0, 0.0, -90.0),
         ),
     )

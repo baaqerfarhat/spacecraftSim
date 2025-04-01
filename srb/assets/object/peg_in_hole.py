@@ -42,8 +42,8 @@ class ProfilePeg(Object):
         prim_path="{ENV_REGEX_NS}/peg",
         spawn=UsdFileCfg(
             usd_path=(
-                SRB_ASSETS_DIR_SRB_OBJECT.joinpath("peg_in_hole_profile")
-                .joinpath("profile.usdc")
+                SRB_ASSETS_DIR_SRB_OBJECT.joinpath("peg_in_hole")
+                .joinpath("profile_simple.usdc")
                 .as_posix()
             ),
             collision_props=CollisionPropertiesCfg(),
@@ -62,8 +62,8 @@ class ShortProfilePeg(Object):
         prim_path="{ENV_REGEX_NS}/peg",
         spawn=UsdFileCfg(
             usd_path=(
-                SRB_ASSETS_DIR_SRB_OBJECT.joinpath("peg_in_hole_profile")
-                .joinpath("profile_short.usdc")
+                SRB_ASSETS_DIR_SRB_OBJECT.joinpath("peg_in_hole")
+                .joinpath("profile_short_simple.usdc")
                 .as_posix()
             ),
             collision_props=CollisionPropertiesCfg(),
@@ -82,8 +82,8 @@ class ProfileHole(Object):
         prim_path="{ENV_REGEX_NS}/hole",
         spawn=UsdFileCfg(
             usd_path=(
-                SRB_ASSETS_DIR_SRB_OBJECT.joinpath("peg_in_hole_profile")
-                .joinpath("hole.usdc")
+                SRB_ASSETS_DIR_SRB_OBJECT.joinpath("peg_in_hole")
+                .joinpath("hole_simple.usdc")
                 .as_posix()
             ),
             collision_props=CollisionPropertiesCfg(),

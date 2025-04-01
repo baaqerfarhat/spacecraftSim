@@ -19,8 +19,8 @@ class FrankaHand(ActiveTool):
     asset_cfg: ArticulationCfg = ArticulationCfg(
         prim_path="{ENV_REGEX_NS}/franka_hand",
         spawn=UsdFileCfg(
-            usd_path=SRB_ASSETS_DIR_SRB_ROBOT.joinpath("franka_emika")
-            .joinpath("panda_hand_instanceable.usd")
+            usd_path=SRB_ASSETS_DIR_SRB_ROBOT.joinpath("gripper")
+            .joinpath("franka_hand.usdz")
             .as_posix(),
             activate_contact_sensors=True,
             collision_props=CollisionPropertiesCfg(
@@ -44,8 +44,8 @@ class FrankaHand(ActiveTool):
                 joint_names_expr=["panda_finger_joint.*"],
                 effort_limit=200.0,
                 velocity_limit=0.2,
-                stiffness=2e3,
-                damping=1e2,
+                stiffness=2000.0,
+                damping=250.0,
             ),
         },
     )
