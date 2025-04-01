@@ -16,6 +16,8 @@ The Space Robotics Bench provides various mobile robots, including legged robots
 
 ### Perseverance (`perseverance`)
 
+### Pragyan (`pragyan`)
+
 ## Legged Robots
 
 ### Bipeds
@@ -24,13 +26,11 @@ The Space Robotics Bench provides various mobile robots, including legged robots
 
 ### Quadrupeds
 
-#### ANYmal B (`anymal_b`)
-
 #### ANYmal C (`anymal_c`)
 
 #### ANYmal D (`anymal_d`)
 
-#### Random ANYmal (`random_anymal`)
+#### Random ANYmal Quadruped (`random_anymal_quadruped`)
 
 #### Spot (`spot`)
 
@@ -40,14 +40,32 @@ The Space Robotics Bench provides various mobile robots, including legged robots
 
 #### Unitree Go2 (`unitree_go2`)
 
+#### Random Unitree Quadruped (`random_unitree_quadruped`)
+
 ## Aerial Robots
 
-### Crazyflie (`crazyflie`)
+### Multicopters
 
-### Ingenuity (`ingenuity`)
+#### Crazyflie (`crazyflie`)
+
+#### Ingenuity (`ingenuity`)
 
 ## Orbital Robots
 
-### CubeSat (`cubesat`)
+### Spacecraft
 
-### Lunar Gateway (`gateway`)
+#### CubeSat (`cubesat`)
+
+#### Venus Express (`venus_express`)
+
+#### Lunar Gateway (`gateway`)
+
+### Lander
+
+#### Apollo Lander (`apollo_lander`)
+
+#### Peregrine Lander (`peregrine_lander`)
+
+#### Vikram Lander (`vikram_lander`)
+
+#### Random Lander (`random_lander`)

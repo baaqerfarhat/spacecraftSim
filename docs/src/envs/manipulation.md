@@ -24,6 +24,8 @@ The Space Robotics Bench provides a wide range of environments that focus on sta
 
 > Precision assembly task requiring the robot to insert a peg into a hole
 
+<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/C8xhE6hHG9I?si=5_fy6yqut35iPD9B&mute=1&autoplay=1&loop=1&playlist=C8xhE6hHG9I" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 <iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/2ChSPhO9Y5s?si=JxX52BuI9K-W_8eb&mute=1&autoplay=1&loop=1&playlist=2ChSPhO9Y5s" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 #### Peg-in-Hole Assembly — Multi (`peg_in_hole_assembly_multi`)

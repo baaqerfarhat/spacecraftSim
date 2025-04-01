@@ -10,11 +10,11 @@ The Space Robotics Bench provides mobile manipulator robots that combine locomot
 
 ## Combined Systems
 
-#### Aerial Manipulator
+#### Aerial Manipulator (Combination)
 
-#### Ground Manipulator
+#### Ground Manipulator (Combination)
 
-#### Orbital Manipulator
+#### Orbital Manipulator (Combination)
 
 ## Humanoids
 

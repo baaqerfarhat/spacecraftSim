@@ -8,15 +8,17 @@
 
 The Space Robotics Bench provides a variety of robotic arms for simulating manipulation tasks.
 
+## Robotic Arms
+
 #### Canadarm3 (`canadarm3`)
 
 #### Franka Emika (`franka`)
 
-#### Kinova JACO2 — 6 DoF (`kinova_j2n6s300`)
+#### Kinova JACO2 — 6 DoF (`kinova_j2n6s`)
 
-#### Kinova JACO2 — 7 DoF (`kinova_j2n7s300`)
+#### Kinova JACO2 — 7 DoF (`kinova_j2n7s`)
 
-#### Kinova Gen3 (`kinova_gen3`)
+#### Kinova Gen3 — 7 DoF (`kinova_gen3n7`)
 
 #### UR3 (`ur3`)
 
@@ -36,4 +38,22 @@ The Space Robotics Bench provides a variety of robotic arms for simulating manip
 
 #### UR30 (`ur30`)
 
+#### Random UR Manipulator (`random_ur_manipulator`)
+
 #### Unitree Z1 (`unitree_z1`)
+
+## End-Effectors
+
+### Passive End-Effectors
+
+#### Scoop (`scoop`)
+
+### Active End-Effectors
+
+#### Allegro Hand (`allegro_hand`)
+
+#### Franka Hand (`franka_hand`)
+
+#### Kinova Jaco 2 3-Finger Gripper (`kinova300`)
+
+#### Shadow Hand (`shadow_hand`)
