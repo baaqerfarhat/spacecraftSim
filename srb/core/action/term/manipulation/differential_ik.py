@@ -1,4 +1,4 @@
-from typing import Type
+from typing import TYPE_CHECKING, Type
 
 import isaaclab.utils.math as math_utils
 import torch
@@ -11,12 +11,21 @@ from isaaclab.envs.mdp.actions.task_space_actions import (
 from isaaclab.managers.action_manager import ActionTerm
 from isaaclab.utils import configclass
 
+if TYPE_CHECKING:
+    from srb._typing import AnyEnv
+    from srb.core.asset import Articulation
+
 
 class DifferentialInverseKinematicsAction(__DifferentialInverseKinematicsAction):
     cfg: "DifferentialInverseKinematicsActionCfg"
+    _env: "AnyEnv"
+    _asset: "Articulation"
 
-    def __init__(self, cfg: "DifferentialInverseKinematicsActionCfg", *args, **kwargs):
-        super().__init__(cfg, *args, **kwargs)
+    def __init__(self, cfg: "DifferentialInverseKinematicsActionCfg", env: "AnyEnv"):
+        super().__init__(
+            cfg,
+            env,  # type: ignore
+        )
 
         if self.cfg.base_name:
             base_ids, base_names = self._asset.find_bodies(self.cfg.base_name)
@@ -64,7 +73,7 @@ class DifferentialInverseKinematicsAction(__DifferentialInverseKinematicsAction)
 
         return ee_pose_b, ee_quat_b
 
-    def _compute_frame_jacobian(self):
+    def _compute_frame_jacobian(self) -> torch.Tensor:
         jacobian = self.jacobian_b
         if self.cfg.body_offset is not None:
             jacobian[:, :3, :] += torch.bmm(
