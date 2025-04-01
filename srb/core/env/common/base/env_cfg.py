@@ -1,6 +1,7 @@
 import math
 import types
 from dataclasses import MISSING
+from os import environ
 from typing import Dict, get_type_hints
 
 import torch
@@ -10,6 +11,7 @@ from srb.core.action import (
     ActionGroup,
     ActionTermCfg,
     DifferentialInverseKinematicsActionCfg,
+    OperationalSpaceControllerActionCfg,
 )
 from srb.core.action.term import DummyActionCfg
 from srb.core.asset import (
@@ -27,7 +29,11 @@ from srb.core.asset import (
     Tool,
 )
 from srb.core.domain import Domain
+from srb.core.manager import EventTermCfg, SceneEntityCfg
 from srb.core.marker import VisualizationMarkersCfg
+from srb.core.mdp import follow_xform_orientation_linear_trajectory  # noqa F401
+from srb.core.mdp import reset_scene_to_default  # noqa F401
+from srb.core.mdp import reset_xform_orientation_uniform
 from srb.core.sensor import SensorBaseCfg
 from srb.core.sim import (
     DistantLightCfg,
@@ -41,11 +47,11 @@ from srb.core.sim import (
     SimulationCfg,
 )
 from srb.core.sim.robot_setup import RobotAssemblerCfg
-from srb.core.visuals import VisualsCfg, rtx_post
+from srb.core.visuals import VisualsCfg
 from srb.utils import logging
 from srb.utils.cfg import configclass
 from srb.utils.math import combine_frame_transforms_tuple
-from srb.utils.path import SRB_ASSETS_DIR_SRB_HDRI
+from srb.utils.path import SRB_ASSETS_DIR_SRB_SKYDOME
 
 from .event_cfg import BaseEventCfg
 from .scene_cfg import BaseSceneCfg
@@ -112,8 +118,10 @@ class BaseEnvCfg:
 
     ## Misc
     truncate_episodes: bool = True
-    include_extras: bool = False
-    debug_vis: bool = False
+    extras: bool = False
+    debug_vis: bool = (
+        environ.get("DEBUG_VIS") or environ.get("SRB_DEBUG_VIS", "false")
+    ).lower() in ("true", "1")
 
     ## Particles
     # Note: This option is likely to be removed in the future
@@ -156,12 +164,12 @@ class BaseEnvCfg:
 
     def _update_memory_allocation(self):
         # TODO[low]: Tune GPU memory allocation for all tasks
-        _mem_fac = math.floor(self.scene.num_envs**0.25)
+        _mem_fac = math.floor(self.scene.num_envs**0.3)
         self.sim.physx.gpu_max_rigid_contact_count = 2 ** (12 + _mem_fac)
         self.sim.physx.gpu_max_rigid_patch_count = 2 ** (11 + _mem_fac)
-        self.sim.physx.gpu_found_lost_pairs_capacity = 2 ** (16 + _mem_fac)
+        self.sim.physx.gpu_found_lost_pairs_capacity = 2 ** (20 + _mem_fac)
         self.sim.physx.gpu_found_lost_aggregate_pairs_capacity = 2 ** (20 + _mem_fac)
-        self.sim.physx.gpu_total_aggregate_pairs_capacity = 2 ** (16 + _mem_fac)
+        self.sim.physx.gpu_total_aggregate_pairs_capacity = 2 ** (18 + _mem_fac)
         self.sim.physx.gpu_collision_stack_size = 2 ** (20 + _mem_fac)
         self.sim.physx.gpu_heap_capacity = 2 ** (15 + _mem_fac)
         self.sim.physx.gpu_temp_buffer_capacity = 2 ** (12 + _mem_fac)
@@ -186,38 +194,84 @@ class BaseEnvCfg:
         )
 
     def _add_skydome(self, *, prim_path: str = "/World/skydome", **kwargs):
-        # TODO[low]: Transfer skydome texture files as a property of domain
-        texture_file = None
-
         match self.domain:
-            case Domain.MARS:
-                texture_file = SRB_ASSETS_DIR_SRB_HDRI.joinpath(
-                    "martian_sky_day.hdr"
-                ).as_posix()
-                rtx_post.fog(
-                    enable=True,
-                    color=(0.8, 0.4, 0.2),
-                    intensity=0.25,
-                    start_height=16.0,
-                    height_density=0.5,
-                    fog_distance_density=0.05,
+            case Domain.EARTH:
+                self.scene.skydome = AssetBaseCfg(
+                    prim_path=prim_path,
+                    spawn=DomeLightCfg(
+                        intensity=0.25 * self.domain.light_intensity,
+                        texture_file=SRB_ASSETS_DIR_SRB_SKYDOME.joinpath(
+                            "cloudy_sky.exr"
+                        ).as_posix(),
+                        **kwargs,
+                    ),
                 )
+            case Domain.MOON:
+                self.scene.skydome = AssetBaseCfg(
+                    prim_path=prim_path,
+                    spawn=DomeLightCfg(
+                        intensity=0.25 * self.domain.light_intensity,
+                        texture_file=SRB_ASSETS_DIR_SRB_SKYDOME.joinpath(
+                            "stars.exr"
+                        ).as_posix(),
+                        **kwargs,
+                    ),
+                )
+                self.events.randomize_skydome_orientation = EventTermCfg(
+                    func=reset_xform_orientation_uniform,
+                    mode="interval",
+                    is_global_time=True,
+                    interval_range_s=(10.0, 60.0),
+                    params={
+                        "asset_cfg": SceneEntityCfg("skydome"),
+                        "orientation_distribution_params": {
+                            "roll": (-torch.pi, torch.pi),
+                            "pitch": (-torch.pi, torch.pi),
+                            "yaw": (-torch.pi, torch.pi),
+                        },
+                    },
+                )
+            case Domain.MARS:
+                self.scene.skydome = AssetBaseCfg(
+                    prim_path=prim_path,
+                    spawn=DomeLightCfg(
+                        intensity=0.25 * self.domain.light_intensity,
+                        texture_file=SRB_ASSETS_DIR_SRB_SKYDOME.joinpath(
+                            "mars_sky.exr"
+                        ).as_posix(),
+                        **kwargs,
+                    ),
+                )
+                self.events.randomize_skydome_orientation = None
             case Domain.ORBIT:
-                texture_file = SRB_ASSETS_DIR_SRB_HDRI.joinpath(
-                    "low_lunar_orbit.jpg"
-                ).as_posix()
-
-        if texture_file is None:
-            return
-
-        self.scene.skydome = AssetBaseCfg(
-            prim_path=prim_path,
-            spawn=DomeLightCfg(
-                intensity=0.25 * self.domain.light_intensity,
-                texture_file=texture_file,
-                **kwargs,
-            ),
-        )
+                self.scene.skydome = AssetBaseCfg(
+                    prim_path=prim_path,
+                    spawn=DomeLightCfg(
+                        intensity=0.25 * self.domain.light_intensity,
+                        texture_file=SRB_ASSETS_DIR_SRB_SKYDOME.joinpath(
+                            # "low_lunar_orbit.jpg"
+                            "low_earth_orbit.exr"
+                        ).as_posix(),
+                        **kwargs,
+                    ),
+                )
+                self.events.randomize_skydome_orientation = EventTermCfg(
+                    func=reset_xform_orientation_uniform,
+                    mode="interval",
+                    is_global_time=True,
+                    interval_range_s=(10.0, 60.0),
+                    params={
+                        "asset_cfg": SceneEntityCfg("skydome"),
+                        "orientation_distribution_params": {
+                            "roll": (-torch.pi, torch.pi),
+                            "pitch": (-torch.pi, torch.pi),
+                            "yaw": (-torch.pi, torch.pi),
+                        },
+                    },
+                )
+            case _:
+                self.scene.skydome = None
+                self.events.randomize_skydome_orientation = None
 
     def _add_scenery(
         self,
@@ -464,7 +518,11 @@ class BaseEnvCfg:
                         action_term
                         for action_term in robot.manipulator.actions.__dict__.values()
                         if isinstance(
-                            action_term, DifferentialInverseKinematicsActionCfg
+                            action_term,
+                            (
+                                DifferentialInverseKinematicsActionCfg,
+                                OperationalSpaceControllerActionCfg,
+                            ),
                         )
                     ),
                     None,
@@ -560,9 +618,15 @@ class BaseEnvCfg:
                 )
                 # Offset TCP
                 for action_term in manipulator.actions.__dict__.values():
-                    if isinstance(action_term, DifferentialInverseKinematicsActionCfg):
+                    if isinstance(
+                        action_term,
+                        (
+                            DifferentialInverseKinematicsActionCfg,
+                            OperationalSpaceControllerActionCfg,
+                        ),
+                    ):
                         if action_term.body_offset is None:
-                            action_term.body_offset = DifferentialInverseKinematicsActionCfg.OffsetCfg(
+                            action_term.body_offset = action_term.__class__.OffsetCfg(  # type: ignore
                                 pos=manipulator.end_effector.frame_tool_centre_point.offset.pos,
                                 rot=manipulator.end_effector.frame_tool_centre_point.offset.rot,
                             )
