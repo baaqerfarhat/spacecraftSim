@@ -48,7 +48,7 @@ from srb.core.action import (
     MulticopterBodyAccelerationAction,
     NonHolonomicAction,
     OperationalSpaceControllerAction,
-    WheeledRoverDriveAction,
+    WheeledDriveAction,
 )
 from srb.core.asset import Articulation, RigidObject, RigidObjectCollection
 from srb.core.manager import SimulationManager
@@ -440,7 +440,7 @@ class RosInterface(InterfaceBase):
                 msg.angular.z,
             ]
 
-        if isinstance(action_term, (NonHolonomicAction, WheeledRoverDriveAction)):
+        if isinstance(action_term, (NonHolonomicAction, WheeledDriveAction)):
             return Twist, lambda msg: [msg.linear.x, msg.angular.z]
 
         if isinstance(action_term, MulticopterBodyAccelerationAction):
