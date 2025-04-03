@@ -24,7 +24,7 @@ Install Docker Engine and NVIDIA Container Toolkit either by following the offic
 
 ## 3. Run
 
-Now, you can run the Docker container with the provided [script](https://github.com/AndrejOrsula/space_robotics_bench/blob/main/.docker/run.bash). The first run will automatically pull the latest image from Docker Hub:
+Now, you can run the Docker container with the provided [script](https://github.com/AndrejOrsula/space_robotics_bench/blob/main/.docker/run.bash). The first run will automatically pull the latest image from [Docker Hub](https://hub.docker.com/r/andrejorsula/space_robotics_bench/tags):
 
 ```bash
 ./space_robotics_bench/.docker/run.bash
