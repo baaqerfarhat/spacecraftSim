@@ -4,7 +4,9 @@ import carb.settings
 
 from srb.utils import logging
 
-NUCLEUS_ASSET_ROOT_DIR = carb.settings.get_settings().get("/isaac/asset_root/cloud")
+NUCLEUS_ASSET_ROOT_DIR = carb.settings.get_settings().get(
+    "/persistent/isaac/asset_root/cloud"
+)
 NVIDIA_NUCLEUS_DIR = f"{NUCLEUS_ASSET_ROOT_DIR}/NVIDIA"
 ISAAC_NUCLEUS_DIR = f"{NUCLEUS_ASSET_ROOT_DIR}/Isaac"
 ISAACLAB_NUCLEUS_DIR = f"{ISAAC_NUCLEUS_DIR}/IsaacLab"
