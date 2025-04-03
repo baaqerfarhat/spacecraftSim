@@ -13,6 +13,11 @@ In addition to modifications listed below, all models have been converted to the
    - Added materials
 1. [Mars Ingenuity Helicopter](https://science.nasa.gov/resource/mars-ingenuity-helicopter-3d-model) by NASA/JPL-Caltech
 1. [Mars Perseverance Rover](https://science.nasa.gov/resource/mars-perseverance-rover-3d-model) by NASA/JPL-Caltech
+1. [Starship](https://www.blendswap.com/blend/27853) by gallus-gallus
+   - Recreated materials
+1. [Super Heavy](https://www.blendswap.com/blend/27853) by gallus-gallus
+   - Changed number and location of engines
+   - Recreated materials
 
 ## Images
 
