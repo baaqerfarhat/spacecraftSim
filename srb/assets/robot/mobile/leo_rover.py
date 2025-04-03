@@ -60,10 +60,10 @@ class LeoRover(WheeledRobot):
             wheelbase=(0.2975, 0.3587),
             wheel_radius=0.065,
             drive_joint_names=[
-                "wheel_joint_FR",
                 "wheel_joint_FL",
-                "wheel_joint_RR",
+                "wheel_joint_FR",
                 "wheel_joint_RL",
+                "wheel_joint_RR",
             ],
             scale=0.4,
         )
