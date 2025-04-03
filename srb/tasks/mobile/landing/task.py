@@ -6,7 +6,7 @@ import torch
 from srb import assets
 from srb._typing import StepReturn
 from srb.core.action import ThrustAction
-from srb.core.asset import AssetVariant, Lander, Scenery
+from srb.core.asset import AssetVariant, OrbitalRobot, Scenery
 from srb.core.domain import Domain
 from srb.core.env import OrbitalEnv, OrbitalEnvCfg, OrbitalEventCfg, OrbitalSceneCfg
 from srb.core.manager import EventTermCfg, SceneEntityCfg
@@ -82,8 +82,7 @@ class TaskCfg(OrbitalEnvCfg):
     domain: Domain = Domain.MOON
 
     ## Assets
-    robot: Lander | AssetVariant = assets.PeregrineLander()
-    _robot: Lander = MISSING  # type: ignore
+    robot: OrbitalRobot | AssetVariant = assets.PeregrineLander()
     scenery: Scenery | AssetVariant | None = AssetVariant.PROCEDURAL
 
     ## Scene
@@ -247,7 +246,7 @@ def _compute_step_return(
     MAX_TOUCHDOWN_LINEAR_VELOCITY = 2.0
     MAX_TOUCHDOWN_ANGLE = 0.174533  # 10 degrees
     touchdown = contact_robot.any(dim=1)
-    crash = contact_robot.any(dim=1) & (
+    crash = touchdown & (
         (torch.norm(vel_lin_robot, dim=1) > MAX_TOUCHDOWN_LINEAR_VELOCITY)
         | (torch.acos(-projected_gravity_robot[:, 2]) > MAX_TOUCHDOWN_ANGLE)
     )
