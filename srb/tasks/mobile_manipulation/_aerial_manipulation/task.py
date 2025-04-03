@@ -39,7 +39,7 @@ class TaskCfg(AerialManipulationEnvCfg):
 
     ## Time
     episode_length_s: float = 10.0
-    is_finite_horizon: bool = True
+    is_finite_horizon: bool = False
 
     def __post_init__(self):
         super().__post_init__()

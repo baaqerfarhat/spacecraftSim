@@ -68,6 +68,7 @@ class TaskCfg(OrbitalManipulationEnvCfg):
 
     ## Time
     episode_length_s: float = 30.0
+    is_finite_horizon: bool = True
 
     ## Viewer
     viewer: ViewerCfg = ViewerCfg(
@@ -95,6 +96,7 @@ class TaskCfg(OrbitalManipulationEnvCfg):
 ############
 
 # TODO[mid]: Implement MDP logic for mobile debris capture
+# TODO[mid]: Try Venus Express as the vehicle
 
 
 class Task(OrbitalManipulationEnv):

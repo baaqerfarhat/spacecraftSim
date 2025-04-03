@@ -72,6 +72,7 @@ class TaskCfg(GroundManipulationEnvCfg):
 
     ## Time
     episode_length_s: float = 30.0
+    is_finite_horizon: bool = False
 
     viewer: ViewerCfg = ViewerCfg(
         eye=(2.625, 4.05, 1.3), lookat=(0.0, 1.0, -0.15), origin_type="env"
