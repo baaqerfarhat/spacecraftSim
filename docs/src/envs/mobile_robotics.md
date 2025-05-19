@@ -10,11 +10,11 @@ The mobile robotics environments of the Space Robotics Bench focus on tasks invo
 
 > Locomotion with legged robots and humanoids while tracking desired velocity commands
 
+<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/aNYNWzyHPqM?si=DZWXL3oRD_9Si4Ha&mute=1&autoplay=1&loop=1&playlist=aNYNWzyHPqM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 <iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/sJPVIq3kAHU?si=1pa5giAom6LpDArS&mute=1&autoplay=1&loop=1&playlist=sJPVIq3kAHU" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 <iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/4j4Qf-HOn70?si=HHTDx2HlzyiPNVaJ&mute=1&autoplay=1&loop=1&playlist=4j4Qf-HOn70" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
-<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/RkGY7siC43A?si=SryvTcjc5Pn9bPkC&mute=1&autoplay=1&loop=1&playlist=RkGY7siC43A" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## Aerial Environments
 
@@ -28,7 +28,13 @@ The mobile robotics environments of the Space Robotics Bench focus on tasks invo
 
 <iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/mi247B_OcZU?si=-9KXEEmBbCOsnVNO&mute=1&autoplay=1&loop=1&playlist=mi247B_OcZU" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/4kSzkHoxw_M?si=EQEosUnBdMulbdpq&mute=1&autoplay=1&loop=1&playlist=4kSzkHoxw_M" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/0RyxarshEx0?si=lMhkMlC4r588UbNg&mute=1&autoplay=1&loop=1&playlist=0RyxarshEx0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+### Rendezvous (`rendezvous`)
+
+> Maneuvering of spacecraft in microgravity to rendezvous with an uncooperative target
+
+<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/61akiT5GRJY?si=jKuuaKt5KqeIJS3Y&mute=1&autoplay=1&loop=1&playlist=61akiT5GRJY" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ### Orbital Evasion (`orbital_evasion`)
 

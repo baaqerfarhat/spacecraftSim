@@ -14,6 +14,12 @@ The Space Robotics Bench provides a wide range of environments that focus on sta
 
 <iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/CyPJr6LSUac?si=9gmKE_dIDPhwDgYE&mute=1&autoplay=1&loop=1&playlist=CyPJr6LSUac" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
+#### Excavation (`excavation`)
+
+> Excavation of granular material (regolith)
+
+<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/7dHwPsRlYnk?si=Jpu0SNrRtR9DH-S0&mute=1&autoplay=1&loop=1&playlist=7dHwPsRlYnk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 ### Debris Capture (`debris_capture`)
 
 > Capture and securement of floating debris in microgravity with a fixed-base manipulator
@@ -33,6 +39,12 @@ The Space Robotics Bench provides a wide range of environments that focus on sta
 > A variation of peg-in-hole assembly with multiple pegs and holes
 
 <iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/50nKU-myKbM?si=Gvh9TxN8F8KCot1o&mute=1&autoplay=1&loop=1&playlist=50nKU-myKbM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+#### Screwdriving (`screwdriving`)
+
+> Fastening of a pre-inserted bolt
+
+<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/w25DwrgeG2M?si=6NhaQBg9Rd6aFWRJ&mute=1&autoplay=1&loop=1&playlist=w25DwrgeG2M" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ### Solar Panel Assembly (`solar_panel_assembly`)
 

@@ -4,7 +4,7 @@ The mobile manipulation environments of the Space Robotics Bench represent a cha
 
 ## Ground-based Mobile Manipulation
 
-### Excavation (`excavation`)
+### Mobile Excavation (`mobile_excavation`)
 
 > Excavation of granular material (regolith) with a ground-based mobile manipulator
 

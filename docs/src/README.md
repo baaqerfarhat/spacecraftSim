@@ -1,4 +1,4 @@
-![](_images/srb_multi_env.jpg)
+<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/jw5XpIER_40?si=1Fc3-khvRHnYqO9C&mute=1&autoplay=1&loop=1&playlist=jw5XpIER_40" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 **Space Robotics Bench (SRB)** is a comprehensive collection of environments and tasks for robotics research in the challenging domain of space. It provides a unified framework for developing and validating autonomous systems under diverse extraterrestrial scenarios. At the same time, its design is flexible and extensible to accommodate a variety of development workflows and research directions beyond Earth.
 
