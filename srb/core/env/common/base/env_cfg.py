@@ -7,6 +7,7 @@ from typing import Dict, get_type_hints
 import torch
 from simforge import BakeType
 
+from srb import assets
 from srb.core.action import (
     ActionGroup,
     ActionTermCfg,
@@ -374,7 +375,11 @@ class BaseEnvCfg:
         )
 
         # Update prim path
-        scenery.asset_cfg.prim_path = prim_path_stacked if self.stack else prim_path
+        scenery.asset_cfg.prim_path = (
+            prim_path_stacked
+            if self.stack or isinstance(self.scenery, assets.GroundPlane)
+            else prim_path
+        )
 
         # Add to the scene
         self.scene.scenery = scenery.asset_cfg
