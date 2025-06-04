@@ -1,23 +1,15 @@
 # https://skrl.readthedocs.io/en/latest/api/utils/model_instantiators.html
 models:
-  separate: False
+  separate: True
   policy:
-    class: GaussianMixin
-    clip_actions: False
-    clip_log_std: True
-    min_log_std: -20.0
-    max_log_std: 2.0
-    initial_log_std: -2.0
+    class: DeterministicMixin
+    clip_actions: True
     network:
       - name: net
-        input: 'concatenate((
-          STATES["state_dyn"],
-          STATES["proprio"],
-          STATES["proprio_dyn"],
-          STATES["command"]
-          ))'
+        input: 'concatenate((STATES["state_dyn"], STATES["proprio"], STATES["proprio_dyn"], STATES["command"]))'
         layers: [384, 384]
         activations: elu
+        output_activation: tanh
     output: ACTIONS
   value:
     class: DeterministicMixin
@@ -28,7 +20,8 @@ models:
           STATES["state_dyn"],
           STATES["proprio"],
           STATES["proprio_dyn"],
-          STATES["command"]
+          STATES["command"],
+          ACTIONS["actions"]
           ))'
         layers: [384, 384]
         activations: elu
@@ -37,34 +30,37 @@ models:
 # https://skrl.readthedocs.io/en/latest/api/memories/random.html
 memory:
   class: RandomMemory
-  memory_size: 256
+  memory_size: 5000000
 
-# https://skrl.readthedocs.io/en/latest/api/agents/ppo.html
+# https://skrl.readthedocs.io/en/latest/api/agents/ddpg.html
 agent:
-  class: PPO
-  rollouts: 64
-  learning_epochs: 16
-  mini_batches: 8
+  class: DDPG
+  batch_size: 512
   discount_factor: 0.997
-  lambda: 0.9
-  learning_rate: 1.0e-4
-  learning_rate_scheduler: null
-  learning_rate_scheduler_kwargs: {}
+  polyak_factor: 0.005
+  learning_rate_policy: 3.0e-4
+  learning_rate_value: 3.0e-4
+  learning_rate_scheduler_policy: null
+  learning_rate_scheduler_value: null
+  learning_rate_scheduler_kwargs_policy: {}
+  learning_rate_scheduler_kwargs_value: {}
   state_preprocessor: RunningStandardScaler
   state_preprocessor_kwargs: null
-  value_preprocessor: RunningStandardScaler
-  value_preprocessor_kwargs: null
-  random_timesteps: 0
-  learning_starts: 0
-  grad_norm_clip: 0.5
-  ratio_clip: 0.1
-  value_clip: 0.1
-  clip_predicted_values: True
-  entropy_loss_scale: 0.01
-  value_loss_scale: 0.5
-  kl_threshold: 0.0
+  value_preprocessor: null
+  random_timesteps: 50000
+  learning_starts: 50000
+  grad_norm_clip: 0.0
+  learn_once: False
+  rollouts: 1
+  learning_epochs: 4
+  mini_batches: 1
+  exploration:
+    noise: GaussianNoise
+    noise_kwargs:
+      mean: 0.0
+      stddev: 0.1
+      clip: null
   rewards_shaper_scale: 1.0
-  time_limit_bootstrap: False
   experiment:
     directory: "MISSING"
     experiment_name: "MISSING"
@@ -75,5 +71,5 @@ agent:
 # https://skrl.readthedocs.io/en/latest/api/trainers/sequential.html
 trainer:
   class: SequentialTrainer
-  timesteps: 50000000
+  timesteps: 100000000
   environment_info: log
