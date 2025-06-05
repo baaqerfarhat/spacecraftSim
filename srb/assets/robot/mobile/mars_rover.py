@@ -7,7 +7,7 @@ from srb.core.sim import (
     RigidBodyPropertiesCfg,
     UsdFileCfg,
 )
-from srb.utils.math import rpy_to_quat
+from srb.utils.math import deg_to_rad, rpy_to_quat
 from srb.utils.path import SRB_ASSETS_DIR_SRB_ROBOT
 
 
@@ -92,7 +92,8 @@ class MarsRover(WheeledRobot):
                 "RL_Drive_Continous",
                 "RR_Drive_Continous",
             ],
-            scale=1.0,
+            scale_linear=0.5,
+            scale_angular=deg_to_rad(45),
         )
     )
 

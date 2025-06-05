@@ -7,7 +7,7 @@ from srb.core.sim import (
     RigidBodyPropertiesCfg,
     UsdFileCfg,
 )
-from srb.utils.math import rpy_to_quat
+from srb.utils.math import deg_to_rad, rpy_to_quat
 from srb.utils.path import SRB_ASSETS_DIR_SRB_ROBOT
 
 
@@ -73,7 +73,8 @@ class Pragyan(WheeledRobot):
                 "wheel_drive_joint_lr",
                 "wheel_drive_joint_rr",
             ],
-            scale=1.0,
+            scale_linear=0.35,
+            scale_angular=deg_to_rad(80),
         )
     )
 

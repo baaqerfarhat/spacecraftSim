@@ -7,7 +7,7 @@ from srb.core.sim import (
     RigidBodyPropertiesCfg,
     UsdFileCfg,
 )
-from srb.utils.math import rpy_to_quat
+from srb.utils.math import deg_to_rad, rpy_to_quat
 from srb.utils.path import SRB_ASSETS_DIR_SRB_ROBOT
 
 
@@ -64,7 +64,8 @@ class LeoRover(WheeledRobot):
                 "wheel_joint_RL",
                 "wheel_joint_RR",
             ],
-            scale=0.4,
+            scale_linear=0.4,
+            scale_angular=deg_to_rad(60),
         )
     )
 

@@ -49,7 +49,9 @@ class WheeledDriveAction(ActionTerm):
 
     def process_actions(self, actions: torch.Tensor):
         self._raw_actions = actions
-        self._processed_actions = actions.clone() * self.cfg.scale
+        self._processed_actions = actions.clone()
+        self._processed_actions[:, 0:3] *= self.cfg.scale_linear
+        self._processed_actions[:, 3:6] *= self.cfg.scale_linear
         if self.cfg.max_linear_velocity is not None:
             self._processed_actions[:, 0].clamp_(
                 -self.cfg.max_linear_velocity, self.cfg.max_linear_velocity
@@ -403,7 +405,8 @@ class WheeledDriveActionCfg(ActionTermCfg):
     class_type: Type = WheeledDriveAction
 
     # Scaling factors
-    scale: float = 1.0
+    scale_linear: float = 1.0
+    scale_angular: float = 1.0
 
     # Drive configuration (auto-detected if None)
     drive_type: Optional[DriveType] = None

@@ -6,6 +6,7 @@ from .lander import (  # noqa: F401
     ApolloLander,
     PeregrineLander,
     RandomLander,
+    ResilienceLander,
     VikramLander,
 )
 from .leo_rover import LeoRover  # noqa: F401
