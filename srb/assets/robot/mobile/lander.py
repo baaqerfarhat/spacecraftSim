@@ -411,6 +411,99 @@ class VikramLander(Lander):
     )
 
 
+class ResilienceLander(Lander):
+    ## Model
+    asset_cfg: RigidObjectCfg = RigidObjectCfg(
+        prim_path="{ENV_REGEX_NS}/lander",
+        spawn=UsdFileCfg(
+            usd_path=SRB_ASSETS_DIR_SRB_ROBOT.joinpath("lander")
+            .joinpath("resilience.usdz")
+            .as_posix(),
+            activate_contact_sensors=True,
+            collision_props=CollisionPropertiesCfg(),
+            mesh_collision_props=MeshCollisionPropertiesCfg(
+                mesh_approximation="convexDecomposition"
+            ),
+            rigid_props=RigidBodyPropertiesCfg(
+                max_depenetration_velocity=5.0,
+            ),
+            mass_props=MassPropertiesCfg(mass=340.0),
+        ),
+    )
+
+    ## Actions
+    actions: ActionGroup = ThrustActionGroup(
+        ThrustActionCfg(
+            asset_name="robot",
+            thrusters=(
+                # Propulsion
+                ThrusterCfg(
+                    offset=(0.0, 0.0, 0.325),
+                    power=2500.0,
+                    gimbal_limits=(deg_to_rad(10.0), deg_to_rad(10.0)),
+                ),
+                # Attitude control
+                ThrusterCfg(
+                    offset=(0.3435, 0.3435, 0.45816),
+                    direction=(-0.25, -0.2572, -0.9334),
+                    power=50.0,
+                ),
+                ThrusterCfg(
+                    offset=(0.469217, -0.125732, 0.45816),
+                    direction=(-0.293374, 0.076, -0.953),
+                    power=50.0,
+                ),
+                ThrusterCfg(
+                    offset=(-0.1257, 0.46922, 0.45816),
+                    direction=(0.0977, -0.3452, -0.9334),
+                    power=50.0,
+                ),
+                ThrusterCfg(
+                    offset=(-0.3435, -0.3435, 0.45816),
+                    direction=(0.25, 0.2572, -0.9334),
+                    power=50.0,
+                ),
+                ThrusterCfg(
+                    offset=(-0.469217, 0.125732, 0.45816),
+                    direction=(0.293374, -0.076, -0.953),
+                    power=50.0,
+                ),
+                ThrusterCfg(
+                    offset=(0.1257, -0.46922, 0.45816),
+                    direction=(-0.0977, 0.3452, -0.9334),
+                    power=50.0,
+                ),
+            ),
+            fuel_capacity=0.5 * 660.0,
+            fuel_consumption_rate=(0.5 * 660.0 / (1 * 2500.0)) / 20.0,
+        )
+    )
+
+    ## Frames
+    frame_base: Frame = Frame(prim_relpath="base")
+    frame_payload_mount: Frame = Frame(
+        prim_relpath="base",
+        offset=Transform(
+            pos=(0.0, 0.0, 0.0),
+            rot=rpy_to_quat(0.0, 0.0, 0.0),
+        ),
+    )
+    frame_manipulator_mount: Frame = Frame(
+        prim_relpath="base",
+        offset=Transform(
+            pos=(0.0, 0.0, 0.0),
+            rot=rpy_to_quat(0.0, 0.0, 0.0),
+        ),
+    )
+    frame_onboard_camera: Frame = Frame(
+        prim_relpath="base/camera_onboard",
+        offset=Transform(
+            pos=(0.0, 0.3, 0.55),
+            rot=rpy_to_quat(0.0, 90.0, 0.0),
+        ),
+    )
+
+
 class RandomLander(Lander):
     asset_cfg: RigidObjectCfg = ApolloLander().asset_cfg.copy()  # type: ignore
     asset_cfg.prim_path = "{ENV_REGEX_NS}/anymal"
@@ -420,6 +513,7 @@ class RandomLander(Lander):
             ApolloLander().asset_cfg.spawn,  # type: ignore
             PeregrineLander().asset_cfg.spawn,  # type: ignore
             VikramLander().asset_cfg.spawn,  # type: ignore
+            ResilienceLander().asset_cfg.spawn,  # type: ignore
         ),
         activate_contact_sensors=True,
     )
