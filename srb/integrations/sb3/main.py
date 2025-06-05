@@ -37,7 +37,9 @@ def run(
     # All
     log_interval = agent_cfg.pop("log_interval", -1)
     verbose = agent_cfg.pop("verbose", True)
-    track = agent_cfg.pop("track", True)
+    track = agent_cfg.pop("track", False)
+    init_tensorboard = agent_cfg.pop("tensorboard", True)
+    init_wandb = agent_cfg.pop("wandb", False)
     # Train
     save_freq = agent_cfg.pop("save_freq", -1)
     save_replay_buffer = agent_cfg.pop("save_replay_buffer", False)
@@ -64,7 +66,10 @@ def run(
     if workflow == "eval":
         logdir = stamp_dir(logdir.joinpath("eval"))
 
-    if track:
+    tensorboard_log = (
+        logdir.joinpath("tensorboard") if track or init_tensorboard else None
+    )
+    if init_wandb:
         import wandb
 
         _run = wandb.init(
@@ -72,9 +77,6 @@ def run(
             sync_tensorboard=True,
             monitor_gym=True,
         )
-        tensorboard_log = logdir.joinpath("tensorboard")
-    else:
-        tensorboard_log = None
 
     # Wrap the environment
     env = Sb3EnvWrapper(env)  # type: ignore
