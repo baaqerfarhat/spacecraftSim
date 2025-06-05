@@ -40,7 +40,7 @@ The `env.stack` parameter controls whether environments share assets or have ind
 - ❗ Higher memory usage
 
 ```bash
-srb agent rand -e _manipulation env.scene.num_envs=16 env.stack=false
+srb agent rand -e _manipulation env.num_envs=16 env.stack=false
 ```
 
 ### Stacked Environments (`env.stack=true`)
@@ -52,7 +52,7 @@ srb agent rand -e _manipulation env.scene.num_envs=16 env.stack=false
 - ❗ Does not support tasks with visual sensors
 
 ```bash
-srb agent rand -e _manipulation env.scene.num_envs=16 env.stack=true
+srb agent rand -e _manipulation env.num_envs=16 env.stack=true
 ```
 
 > **Note**: Non-visual `locomotion_velocity_tracking` task defaults to `env.stack=true`.

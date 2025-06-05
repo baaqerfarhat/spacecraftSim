@@ -24,7 +24,7 @@ The most direct way to modify environment parameters is through command-line ove
 srb agent <WORKFLOW> --env <ENV> \
     env.domain=moon \
     env.robot=ur10 \
-    env.scene.num_envs=4 \
+    env.num_envs=4 \
     env.stack=false \
     ...
 ```
@@ -41,7 +41,7 @@ Below are the most important configuration parameters organized by category (sev
 
 - `env.domain` - [Domain](domain.md)
 - `env.robot` - [Robot](robot.md)
-- `env.scene.num_envs`, `env.stack` - [Parallelism](parallelism.md)
+- `env.num_envs`, `env.stack` - [Parallelism](parallelism.md)
 - `env.scatter_particles` - [Particles](particles.md)
 
 ### Simulation

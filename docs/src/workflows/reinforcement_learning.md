@@ -17,7 +17,7 @@ The fastest way to get started with training an RL agent is by using the `srb ag
 Let's start with a simple `landing` environment using the `sbx_ppo` algorithm ([PPO](https://arxiv.org/abs/1707.06347) implementation of [SBX](https://github.com/araffin/sbx)). For now, omit the `--headless` flag so that you can observe the convergence in real time:
 
 ```bash
-srb agent train --algo sbx_ppo --env landing env.num_envs=512
+srb agent train --algo sbx_ppo --env landing env.num_envs=512 --hide_ui
 ```
 
 <!-- TODO[docs]: Video of training -->
