@@ -1,5 +1,5 @@
 use crate::cache::{self, EnvCache, ObjectCache, RobotCache, SceneryCache};
-use crate::env_cfg::{Domain, TaskConfig};
+use crate::env_cfg::{Domain, TaskConfig, Workflow};
 use crate::page::Page;
 use eframe::epaint::Color32;
 use egui_commonmark::{commonmark_str, CommonMarkCache};
@@ -1061,11 +1061,45 @@ impl App {
                         egui::Grid::new("extra_developer_options_grid").show(ui, |ui| {
                             ui.add(
                                 egui::Label::new(
-                                    egui::RichText::new("\u{ef75} Scenario").size(20.0),
+                                    egui::RichText::new("\u{ea3c} Workflow").size(20.0),
                                 )
                                 .selectable(false),
                             );
-                            egui::ComboBox::new("dev_scenario_combo_box", "")
+                            egui::ComboBox::new("dev_workflow_combo_box", "")
+                                .width(235.0)
+                                .selected_text(
+                                    egui::RichText::new(match self.task_config.workflow {
+                                        Workflow::Zero => "Zero",
+                                        Workflow::Rand => "Rand",
+                                        Workflow::Teleop => "Teleop",
+                                    })
+                                    .size(20.0),
+                                )
+                                .show_ui(ui, |ui| {
+                                    ui.selectable_value(
+                                        &mut self.task_config.workflow,
+                                        Workflow::Rand,
+                                        "Rand",
+                                    );
+                                    ui.selectable_value(
+                                        &mut self.task_config.workflow,
+                                        Workflow::Zero,
+                                        "Zero",
+                                    );
+                                    ui.selectable_value(
+                                        &mut self.task_config.workflow,
+                                        Workflow::Teleop,
+                                        "Teleop",
+                                    );
+                                });
+
+                            ui.end_row();
+
+                            ui.add(
+                                egui::Label::new(egui::RichText::new("\u{ef75} Domain").size(20.0))
+                                    .selectable(false),
+                            );
+                            egui::ComboBox::new("dev_domain_combo_box", "")
                                 .width(235.0)
                                 .selected_text(
                                     egui::RichText::new(match self.task_config.domain {
@@ -1078,6 +1112,16 @@ impl App {
                                     .size(20.0),
                                 )
                                 .show_ui(ui, |ui| {
+                                    ui.selectable_value(
+                                        &mut self.task_config.domain,
+                                        Domain::Asteroid,
+                                        "Asteroid",
+                                    );
+                                    ui.selectable_value(
+                                        &mut self.task_config.domain,
+                                        Domain::Earth,
+                                        "Earth",
+                                    );
                                     ui.selectable_value(
                                         &mut self.task_config.domain,
                                         Domain::Moon,

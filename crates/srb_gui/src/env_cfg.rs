@@ -11,6 +11,8 @@
 pub struct TaskConfig {
     #[builder(default = String::from("sample_collection"))]
     pub task: String,
+    #[builder(default = Workflow::Teleop)]
+    pub workflow: Workflow,
     #[builder(default = Domain::Moon)]
     pub domain: Domain,
     #[builder(default = None)]
@@ -41,20 +43,21 @@ impl TaskConfig {
     pub fn set_exec_env(&self, mut exec: subprocess::Exec) -> subprocess::Exec {
         exec = exec.arg("agent");
 
-        let is_direct_teleop_supported = !self.task.contains("locomotion");
-        if is_direct_teleop_supported {
-            exec = exec.arg("teleop");
-            exec = exec.arg("--teleop_device");
-            exec = exec.args(
-                &self
-                    .teleop_devices
-                    .iter()
-                    .map(|device| device.to_string().to_lowercase())
-                    .collect::<Vec<String>>(),
-            );
-        } else {
-            // TODO[gui]: Support teleop via policy
-            exec = exec.arg("rand");
+        match self.workflow {
+            Workflow::Teleop => {
+                exec = exec.arg(self.workflow.to_string());
+                exec = exec.arg("--teleop_device");
+                exec = exec.args(
+                    &self
+                        .teleop_devices
+                        .iter()
+                        .map(|device| device.to_string().to_lowercase())
+                        .collect::<Vec<String>>(),
+                );
+            }
+            _ => {
+                exec = exec.arg(self.workflow.to_string());
+            }
         }
         if self.hide_ui {
             exec = exec.arg("--hide_ui");
@@ -114,7 +117,6 @@ impl TaskConfig {
         exec
     }
 
-    /// TODO[gui]: Review robot arg building logic
     fn build_robot_arg(&self) -> String {
         let mut final_robot_arg = String::new();
         let has_base = !self.robot.is_empty() && self.robot != "default";
@@ -299,6 +301,36 @@ impl std::str::FromStr for ObjectType {
             "pedestal" => Ok(ObjectType::Pedestal),
             "tool" => Ok(ObjectType::Tool),
             _ => Err(format!("Invalid ObjectType: {s}")),
+        }
+    }
+}
+
+#[derive(
+    Copy,
+    Clone,
+    Debug,
+    Eq,
+    PartialEq,
+    Hash,
+    serde::Deserialize,
+    serde::Serialize,
+    strum::Display,
+    strum::EnumIter,
+)]
+#[serde(rename_all = "snake_case")]
+pub enum Workflow {
+    Rand,
+    Teleop,
+    Zero,
+}
+impl std::str::FromStr for Workflow {
+    type Err = String;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_lowercase().as_str() {
+            "rand" => Ok(Self::Rand),
+            "teleop" => Ok(Self::Teleop),
+            "zero" => Ok(Self::Zero),
+            _ => Err(format!("Invalid Workflow: {s}")),
         }
     }
 }
