@@ -124,7 +124,7 @@ After a while, you should see 3 tables printed in the terminal:
 
 > Reference: [`srb agent teleop` — Teleoperate Agent](../reference/cli_agent_teleop.md)
 
-Let's start with the `sample_collection` environment where you can manually control the **Franka** manipulator through your keyboard to collect samples on the Moon:
+Let's start with the `sample_collection` environment, inspired by the Mars Sample Return mission, where you can manually control the **Franka** manipulator through your keyboard to collect sample tubes:
 
 ```bash
 srb agent teleop --env sample_collection
@@ -165,7 +165,7 @@ Eventually, Isaac Sim will open with the selected environment, and you will be g
 
 <br>
 
-<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/d6KhKuB-XAs?si=DM0I2IFinw-rqgdD&mute=1&autoplay=1&loop=1&playlist=d6KhKuB-XAs" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/dlzwlct1BLA?si=d_oEZzmvS7SQviO1&mute=1&autoplay=1&loop=1&playlist=dlzwlct1BLA" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 > **Note:** Most tasks employ action spaces that support direct teleoperation (e.g. via Inverse Kinematics). However, some tasks such as `locomotion_velocity_tracking` rely on low-level control of individual joints. In this case, direct teleoperation is not supported, and you will need to provide a control policy that maps your teleoperation commands to low-level control signals. Further instructions are provided in the section for [Teleoperation via Policy](../reference/cli_agent_teleop.md#teleoperation-via-policy).
 
@@ -174,13 +174,13 @@ Eventually, Isaac Sim will open with the selected environment, and you will be g
 > Reference: [Environment Configuration](../config/env_cfg.md)\
 > Reference: [Environment Configuration — Domain](../config/domain.md)
 
-What if we want to collect samples on Mars instead? Luckily, you can easily configure many aspects of the environment through [Hydra](https://hydra.cc). For instance, you can adjust the **domain** and **sample** asset in order to simulate the Mars Sample Return mission:
+What if we want to collect natural samples on the Moon instead? Luckily, you can easily configure many aspects of the environment through [Hydra](https://hydra.cc). For instance, you can adjust the **domain** and configure the **sample** asset to spawn procedurally generated Lunar rock samples (`lunar_rock`):
 
 ```bash
-srb agent teleop --env sample_collection env.domain=mars env.sample=sample_tube
+srb agent teleop --env sample_collection env.domain=moon env.sample=lunar_rock
 ```
 
-<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/dlzwlct1BLA?si=d_oEZzmvS7SQviO1&mute=1&autoplay=1&loop=1&playlist=dlzwlct1BLA" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/d6KhKuB-XAs?si=DM0I2IFinw-rqgdD&mute=1&autoplay=1&loop=1&playlist=d6KhKuB-XAs" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## 3. Observe Random Agents in Action
 
