@@ -10,13 +10,13 @@ The Space Robotics Bench provides various mobile robots, including legged robots
 
 ## Wheeled Robots
 
-### Leo Rover (`leo_rover`)
+#### Leo Rover (`leo_rover`)
 
-<!-- ### Mars Rover (`mars_rover`) -->
+<!-- #### Mars Rover (`mars_rover`) -->
 
-### Perseverance (`perseverance`)
+#### Perseverance (`perseverance`)
 
-### Pragyan (`pragyan`)
+#### Pragyan (`pragyan`)
 
 ## Legged Robots
 
@@ -30,7 +30,7 @@ The Space Robotics Bench provides various mobile robots, including legged robots
 
 #### ANYmal D (`anymal_d`)
 
-#### Random ANYmal Quadruped (`random_anymal_quadruped`)
+#### Random ANYmal Quadruped (`random_anymal_quadruped`) \[Randomized\]
 
 #### Spot (`spot`)
 
@@ -40,7 +40,7 @@ The Space Robotics Bench provides various mobile robots, including legged robots
 
 #### Unitree Go2 (`unitree_go2`)
 
-#### Random Unitree Quadruped (`random_unitree_quadruped`)
+#### Random Unitree Quadruped (`random_unitree_quadruped`) \[Randomized\]
 
 ## Aerial Robots
 
@@ -54,11 +54,15 @@ The Space Robotics Bench provides various mobile robots, including legged robots
 
 ### Spacecraft
 
-#### CubeSat (`cubesat`)
+#### CubeSat (`cubesat`) \[Procedural\]
 
 #### Venus Express (`venus_express`)
 
 #### Lunar Gateway (`gateway`)
+
+#### Starship (`starship`)
+
+#### Super Heavy (`super_heavy`)
 
 ### Lander
 
@@ -68,4 +72,6 @@ The Space Robotics Bench provides various mobile robots, including legged robots
 
 #### Vikram Lander (`vikram_lander`)
 
-#### Random Lander (`random_lander`)
+#### Resilience Lander (`resilience_lander`)
+
+#### Random Lander (`random_lander`) \[Randomized\]

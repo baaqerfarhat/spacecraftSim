@@ -10,7 +10,7 @@ The mobile manipulation environments of the Space Robotics Bench represent a cha
 
 <iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/T7nt1grwHic?si=SAljCvdWv3Z-x-eh&mute=1&autoplay=1&loop=1&playlist=T7nt1grwHic" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-## Aerial Mobile Manipulation
+<!-- ## Aerial Mobile Manipulation -->
 
 ## Orbital Mobile Manipulation
 
@@ -18,4 +18,4 @@ The mobile manipulation environments of the Space Robotics Bench represent a cha
 
 > Capture of floating debris in microgravity with a floating-base mobile manipulator
 
-<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/miLE16-RSL4?si=QZvD_mgpEwg5quYD&mute=1&autoplay=1&loop=1&playlist=miLE16-RSL4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/kZIWWPn2EQQ?si=Rkjo5ZvP6_irIexi&mute=1&autoplay=1&loop=1&playlist=kZIWWPn2EQQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>

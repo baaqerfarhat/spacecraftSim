@@ -4,9 +4,13 @@ The mobile robotics environments of the Space Robotics Bench focus on tasks invo
 
 ## Ground Environments
 
+### Velocity Tracking (`velocity_tracking`)
+
+> Basic tracking of desired velocity commands
+
 <iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/pP5C_oRZ8d8?si=c7exYUNWoG14uOlF&mute=1&autoplay=1&loop=1&playlist=pP5C_oRZ8d8" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-### Locomotion Velocity Tracking (`locomotion_velocity_tracking`)
+### Velocity Tracking — Locomotion (`locomotion_velocity_tracking`)
 
 > Locomotion with legged robots and humanoids while tracking desired velocity commands
 
@@ -14,7 +18,17 @@ The mobile robotics environments of the Space Robotics Bench focus on tasks invo
 
 <iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/sJPVIq3kAHU?si=1pa5giAom6LpDArS&mute=1&autoplay=1&loop=1&playlist=sJPVIq3kAHU" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/4j4Qf-HOn70?si=HHTDx2HlzyiPNVaJ&mute=1&autoplay=1&loop=1&playlist=4j4Qf-HOn70" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+### Waypoint Navigation (`waypoint_navigation`)
+
+> Navigation to a dynamic waypoint
+
+<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/fXtG5wGvWt0?si=NGg7SycGHDhARU0F&mute=1&autoplay=1&loop=1&playlist=fXtG5wGvWt0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+### Waypoint Navigation — Locomotion (`locomotion_waypoint_navigation`)
+
+> Navigation to a dynamic waypoint with legged robots and humanoids
+
+<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/Pap-QDMsHk4?si=Y-m-XkiRgBCjJ8Jz&mute=1&autoplay=1&loop=1&playlist=Pap-QDMsHk4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## Aerial Environments
 
@@ -26,7 +40,7 @@ The mobile robotics environments of the Space Robotics Bench focus on tasks invo
 
 > Landing of spacecraft on planetary surfaces with varying terrain and obstacles
 
-<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/mi247B_OcZU?si=-9KXEEmBbCOsnVNO&mute=1&autoplay=1&loop=1&playlist=mi247B_OcZU" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/BLe6AtlZk6g?si=acLGoHi2U6UO5oSz&mute=1&autoplay=1&loop=1&playlist=BLe6AtlZk6g" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 <iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/0RyxarshEx0?si=lMhkMlC4r588UbNg&mute=1&autoplay=1&loop=1&playlist=0RyxarshEx0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 

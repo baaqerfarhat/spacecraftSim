@@ -16,7 +16,7 @@
 
 - **Abstract Architecture**: The architecture of SRB is designed to be modular and extensible, allowing for easy integration of new assets, robots, tasks and workflows
 
-> 📑 If you have any questions or suggestions regarding this documentation, don't hesitate to reach out to us! More often than not, a lack of understanding is a result of poor documentation... Therefore, we are always looking to improve it.
+> 📑 If you have any questions or suggestions regarding this documentation, don't hesitate to reach out to us! More often than not, a lack of understanding is a result of poor documentation... Therefore, we are always looking to improve it!
 
 ## Table of Contents (available in the left sidebar)
 

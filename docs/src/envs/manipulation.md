@@ -8,17 +8,17 @@ The Space Robotics Bench provides a wide range of environments that focus on sta
 
 <iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/1NYquT2EZdo?si=gkt2wM0VfnaFs797&mute=1&autoplay=1&loop=1&playlist=1NYquT2EZdo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-#### Sample Collection — Multi (`sample_collection_multi`)
+#### Sample Collection — Multi (`multi_sample_collection`)
 
 > A variation of sample collection with multiple samples
 
 <iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/CyPJr6LSUac?si=9gmKE_dIDPhwDgYE&mute=1&autoplay=1&loop=1&playlist=CyPJr6LSUac" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-#### Excavation (`excavation`)
+### Excavation (`excavation`)
 
-> Excavation of granular material (regolith)
+> Extraction of granular material (regolith)
 
-<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/7dHwPsRlYnk?si=Jpu0SNrRtR9DH-S0&mute=1&autoplay=1&loop=1&playlist=7dHwPsRlYnk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/XIJhFsaT1Ls?si=_0waG1xvKRnu2VNs&mute=1&autoplay=1&loop=1&playlist=XIJhFsaT1Ls" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ### Debris Capture (`debris_capture`)
 
@@ -32,15 +32,13 @@ The Space Robotics Bench provides a wide range of environments that focus on sta
 
 <iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/C8xhE6hHG9I?si=5_fy6yqut35iPD9B&mute=1&autoplay=1&loop=1&playlist=C8xhE6hHG9I" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/2ChSPhO9Y5s?si=JxX52BuI9K-W_8eb&mute=1&autoplay=1&loop=1&playlist=2ChSPhO9Y5s" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
-#### Peg-in-Hole Assembly — Multi (`peg_in_hole_assembly_multi`)
+#### Peg-in-Hole Assembly — Multi (`multi_peg_in_hole_assembly`)
 
 > A variation of peg-in-hole assembly with multiple pegs and holes
 
 <iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/50nKU-myKbM?si=Gvh9TxN8F8KCot1o&mute=1&autoplay=1&loop=1&playlist=50nKU-myKbM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-#### Screwdriving (`screwdriving`)
+### Screwdriving (`screwdriving`)
 
 > Fastening of a pre-inserted bolt
 
@@ -50,4 +48,4 @@ The Space Robotics Bench provides a wide range of environments that focus on sta
 
 > Complex assembly sequence involving solar panel components
 
-<img src="https://github.com/user-attachments/assets/34466dbb-0520-4899-ad14-862326961d8a" style="width:50%" /><img src="https://github.com/user-attachments/assets/b73113de-c37d-4d26-9599-ebe52cbc605b" style="width:50%" />
+<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/tY5XDuhdzOc?si=LrL0PEppQIA2ymTc&mute=1&autoplay=1&loop=1&playlist=tY5XDuhdzOc" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>

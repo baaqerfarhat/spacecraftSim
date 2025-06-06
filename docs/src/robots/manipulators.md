@@ -24,6 +24,8 @@ The Space Robotics Bench provides a variety of robotic arms for simulating manip
 
 #### SO-ARM100 — 7 DoF (`so_arm100_d7`)
 
+#### Unitree Z1 (`unitree_z1`)
+
 #### UR3 (`ur3`)
 
 #### UR3e (`ur3e`)
@@ -42,15 +44,9 @@ The Space Robotics Bench provides a variety of robotic arms for simulating manip
 
 #### UR30 (`ur30`)
 
-#### Random UR Manipulator (`random_ur_manipulator`)
-
-#### Unitree Z1 (`unitree_z1`)
+#### Random UR Manipulator (`random_ur_manipulator`) \[Randomized\]
 
 ## End-Effectors
-
-### Passive End-Effectors
-
-#### Scoop (`scoop`)
 
 ### Active End-Effectors
 
@@ -62,6 +58,22 @@ The Space Robotics Bench provides a variety of robotic arms for simulating manip
 
 #### Robotiq Hand-E (`robotiq_hand_e`)
 
+#### Electric Screwdriver M3 (`electric_screwdriver_m3`)
+
+#### Electric Screwdriver M5 (`electric_screwdriver_m5`)
+
 #### Shadow Hand (`shadow_hand`)
 
 #### SO-ARM100 Gripper (`so_arm100_gripper`)
+
+### Passive End-Effectors
+
+#### Rectangular Scoop (`scoop_rectangular`)
+
+#### Spherical Scoop (`scoop_spherical`)
+
+#### Triangular Scoop (`scoop_triangular`)
+
+#### Manual Screwdriver M3 (`manual_screwdriver_m3`)
+
+#### Manual Screwdriver M5 (`manual_screwdriver_m5`)
