@@ -1,9 +1,3 @@
-<div class="warning">
-
-### This page is under construction. Please check back later for updates.
-
-</div>
-
 # Reinforcement Learning Workflow
 
 Reinforcement Learning (RL) is one of the primary focus areas of the Space Robotics Bench. While there are several RL frameworks with their unique peculiarities, SRB offers a unified interface for training and evaluating policies across a diverse set of space robotics tasks.
@@ -20,7 +14,7 @@ Let's start with a simple `landing` environment using the `sbx_ppo` algorithm ([
 srb agent train --algo sbx_ppo --env landing env.num_envs=512 --hide_ui
 ```
 
-<!-- TODO[docs]: Video of training -->
+<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/hx4NqG6NCGQ?si=uBZ8kceMUxkprtwJ&mute=1&autoplay=1&loop=1&playlist=hx4NqG6NCGQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 As you begin to observe the training process, you can also monitor the progress in your terminal. After about 25M timesteps, you will see that the agent found a stable policy that successfully solves the task. Checkpoints are saved regularly, so you are free to stop the training process at any point by sending an interrupt signal (Ctrl+C in most terminals).
 
@@ -34,7 +28,7 @@ Once training is complete, you can evaluate your agent with the `srb agent eval`
 srb agent eval --algo sbx_ppo --env landing env.num_envs=16
 ```
 
-<!-- TODO[docs]: Video of evaluation -->
+<iframe style="width:100%;aspect-ratio:16/9" src="https://www.youtube.com/embed/mi247B_OcZU?si=xDBg_ZFAwHYd7wTR&mute=1&autoplay=1&loop=1&playlist=mi247B_OcZU" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 By default, the latest checkpoint from the training run is loaded for evaluation. However, you might want to run the evaluation for a checkpoint specified via `--model`:
 

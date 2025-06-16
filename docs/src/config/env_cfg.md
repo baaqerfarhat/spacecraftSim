@@ -1,9 +1,3 @@
-<div class="warning">
-
-### This page is under construction. Please check back later for updates.
-
-</div>
-
 # Environment Configuration
 
 The Space Robotics Bench provides a flexible configuration system for environments through [Hydra](https://hydra.cc). This document explains how to customize environment parameters across different domains and tasks.
@@ -32,6 +26,12 @@ srb agent <WORKFLOW> --env <ENV> \
 ### 2. Configuration Files
 
 <!-- TODO[docs]: Add instructions for environment configuration files -->
+
+<div class="warning">
+
+#### This section is under construction. Please check back later for updates.
+
+</div>
 
 ## Key Parameters
 

@@ -1,9 +1,3 @@
-<div class="warning">
-
-### This page is under construction. Please check back later for updates.
-
-</div>
-
 # Agent Configuration
 
 The Space Robotics Bench leverages [Hydra](https://hydra.cc) for managing agent configurations across different robot learning frameworks. This document provides an overview of the configuration structure and common parameters for training agents in SRB.
@@ -30,3 +24,9 @@ srb agent <WORKFLOW> --algo <ALGO> --env <ENV> \
 ### 2. Configuration Files
 
 <!-- TODO[docs]: Add instructions for agent configuration files -->
+
+<div class="warning">
+
+#### This section is under construction. Please check back later for updates.
+
+</div>
