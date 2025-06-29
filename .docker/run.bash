@@ -206,25 +206,30 @@ fi
 
 ## GUI
 if [[ "${WITH_GUI,,}" = true ]]; then
-    # To enable GUI, make sure processes in the container can connect to the x server
-    XAUTH="${TMPDIR:-"/tmp"}/xauth_docker_${PROJECT_NAME}"
-    touch "${XAUTH}"
-    chmod a+r "${XAUTH}"
-    XAUTH_LIST=$(xauth nlist "${DISPLAY}")
-    if [ -n "${XAUTH_LIST}" ]; then
-        echo "${XAUTH_LIST}" | sed -e 's/^..../ffff/' | xauth -f "${XAUTH}" nmerge -
+    # Check if DISPLAY is set
+    if [[ -n "${DISPLAY}" ]]; then
+        # To enable GUI, make sure processes in the container can connect to the x server
+        XAUTH="${TMPDIR:-"/tmp"}/xauth_docker_${PROJECT_NAME}"
+        touch "${XAUTH}"
+        chmod a+r "${XAUTH}"
+        XAUTH_LIST=$(xauth nlist "${DISPLAY}")
+        if [ -n "${XAUTH_LIST}" ]; then
+            echo "${XAUTH_LIST}" | sed -e 's/^..../ffff/' | xauth -f "${XAUTH}" nmerge -
+        fi
+        # GUI-enabling volumes
+        DOCKER_VOLUMES+=(
+            "${XAUTH}:${XAUTH}"
+            "/tmp/.X11-unix:/tmp/.X11-unix"
+            "/dev/input:/dev/input"
+        )
+        # GUI-enabling environment variables
+        DOCKER_ENVIRON+=(
+            DISPLAY="${DISPLAY}"
+            XAUTHORITY="${XAUTH}"
+        )
+    else
+        echo >&2 -e "\033[1;33m[WARNING] DISPLAY variable is not set. GUI will not be enabled in the container.\033[0m"
     fi
-    # GUI-enabling volumes
-    DOCKER_VOLUMES+=(
-        "${XAUTH}:${XAUTH}"
-        "/tmp/.X11-unix:/tmp/.X11-unix"
-        "/dev/input:/dev/input"
-    )
-    # GUI-enabling environment variables
-    DOCKER_ENVIRON+=(
-        DISPLAY="${DISPLAY}"
-        XAUTHORITY="${XAUTH}"
-    )
 fi
 
 ## Run the container
