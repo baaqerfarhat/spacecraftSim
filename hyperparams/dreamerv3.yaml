@@ -34,6 +34,21 @@ run.debug: False
 jax.debug: False
 
 ### Model ###
+##   Debug
+# batch_size: 8
+# batch_length: 10
+# report_length: 5
+# replay.size: 1e4
+# agent:
+#   .*\.bins: 5
+#   .*\.layers: 1
+#   .*\.units: 8
+#   .*\.stoch: 2
+#   .*\.classes: 4
+#   .*\.deter: 8
+#   .*\.hidden: 3
+#   .*\.blocks: 4
+#   .*\.depth: 2
 ##   1M
 # .*\.rssm: { deter: 512, hidden: 64, classes: 4 }
 # .*\.depth: 4
