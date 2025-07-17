@@ -38,3 +38,6 @@ wandb/
 
 ## Dump files
 **/core.*
+srb/assets/object/apophis_accurate.usdz
+srb/assets/object/.thumbs/
+robot/spacecraft/.thumbs/

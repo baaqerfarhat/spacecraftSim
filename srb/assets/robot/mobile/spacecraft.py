@@ -66,6 +66,7 @@ class Gateway(OrbitalRobot):
         prim_relpath="base/camera_onboard",
         offset=Transform(
             pos=(11.148, 0.05865, -1.63578),
+            rot=rpy_to_quat(0.0, 0.0, 180.0),
         ),
     )
 
@@ -302,8 +303,14 @@ class VenusExpress(OrbitalRobot):
     frame_onboard_camera: Frame = Frame(
         prim_relpath="base/camera_onboard",
         offset=Transform(
-            pos=(-0.69557, -0.5479, 0.51),
-            rot=rpy_to_quat(0.0, 0.0, 0.0),
+            pos=(1.0, 1.0, 2.0),
+            # Camera faces asteroid at (-100, 0, 0) from (1, 1, 2):
+            # Direction vector = (-101, -1, -2),
+            # For arbitrary positions, use rpy_to_quat(yaw, pitch, roll) to align +X with (asteroid_pos - camera_pos)
+            # For your setup, rpy_to_quat(90, 0, 0) works to face the asteroid
+            # Set orientation so UI shows (90, 0, 0) for the onboard camera
+            # rpy_to_quat(90, 0, 0) gives -180, -90, 0 in UI, so try rpy_to_quat(0, 0, 90)
+            rot=rpy_to_quat(0.0, 0.0, 90.0),
         ),
     )
 

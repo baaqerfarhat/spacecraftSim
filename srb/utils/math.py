@@ -120,3 +120,30 @@ def transform_points(
     quat: torch.Tensor | None = None,
 ) -> torch.Tensor:
     return _transform_points(points, pos, quat)
+
+
+def quat_from_two_vectors(a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:
+    """
+    Returns quaternion (w, x, y, z) that rotates vector a to vector b.
+    Both a and b must be normalized 3D vectors.
+    """
+    a = a / torch.norm(a)
+    b = b / torch.norm(b)
+    dot = torch.dot(a, b)
+    if dot > 0.999999:
+        # Vectors are nearly identical
+        return torch.tensor([1.0, 0.0, 0.0, 0.0], device=a.device)
+    elif dot < -0.999999:
+        # Vectors are opposite
+        # Find an orthogonal vector
+        orth = torch.tensor([1.0, 0.0, 0.0], device=a.device)
+        if torch.abs(a[0]) > 0.9:
+            orth = torch.tensor([0.0, 1.0, 0.0], device=a.device)
+        axis = torch.cross(a, orth)
+        axis = axis / torch.norm(axis)
+        return torch.cat([torch.tensor([0.0], device=a.device), axis])
+    axis = torch.cross(a, b)
+    w = 1.0 + dot
+    quat = torch.cat([torch.tensor([w], device=a.device), axis])
+    quat = quat / torch.norm(quat)
+    return quat

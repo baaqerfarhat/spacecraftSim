@@ -444,11 +444,26 @@ def zero_agent(
 
     from srb.utils import logging
 
+    print("[ZERO_AGENT] Starting zero agent...")
+    print(f"[ZERO_AGENT] sim_app.is_running() = {sim_app.is_running()}")
+    print(f"[ZERO_AGENT] env.action_space.shape = {env.action_space.shape}")
+    
     action = torch.zeros(env.action_space.shape, device=env.unwrapped.device)  # type: ignore
+    print(f"[ZERO_AGENT] Created zero action tensor: {action.shape}")
 
+    step_count = 0
     with torch.inference_mode():
+        print("[ZERO_AGENT] Entering simulation loop...")
         while sim_app.is_running():
+            print(f"[ZERO_AGENT] Step {step_count}: calling env.step()...")
             observation, reward, terminated, truncated, info = env.step(action)
+            print(f"[ZERO_AGENT] Step {step_count}: env.step() completed")
+            step_count += 1
+            
+            if step_count > 10:  # Limit debug output
+                print(f"[ZERO_AGENT] Step {step_count}: continuing...")
+                break
+                
             logging.trace(
                 f"action: {action}\n"
                 f"observation: {observation}\n"
@@ -457,6 +472,8 @@ def zero_agent(
                 f"truncated: {truncated}\n"
                 f"info: {info}\n"
             )
+    
+    print("[ZERO_AGENT] Simulation loop ended")
 
 
 def teleop_agent(
