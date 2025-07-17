@@ -1042,36 +1042,36 @@ dependencies = [
 
 [[package]]
 name = "egui_commonmark"
-version = "0.20.0"
+version = "0.21.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4a1e5d9a91b1b7a320c9b7f56d1878416d7c9bab3eaf337b036e0ddfabf58623"
+checksum = "26c9caff9c964af1e3d913acd85e86d2170e3169a43cf4ff84eea3106691c14d"
 dependencies = [
- "egui 0.31.1",
+ "egui 0.32.0",
  "egui_commonmark_backend",
  "egui_commonmark_macros",
- "egui_extras",
+ "egui_extras 0.32.0",
  "pulldown-cmark",
 ]
 
 [[package]]
 name = "egui_commonmark_backend"
-version = "0.20.0"
+version = "0.21.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "efb41b6833a6aaa99ca5c4f8e75b2410d69a7b3e30148d413f541147404a0dfa"
+checksum = "6e317aa4031f27be77d4c1c33cb038cdf02d77790c28e5cf1283a66cceb88695"
 dependencies = [
- "egui 0.31.1",
- "egui_extras",
+ "egui 0.32.0",
+ "egui_extras 0.32.0",
  "pulldown-cmark",
  "syntect",
 ]
 
 [[package]]
 name = "egui_commonmark_macros"
-version = "0.20.0"
+version = "0.21.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cd5c0fc9a520207f9c8953b20aec5785b8849d9acfe230ffcc537508298fcd1f"
+checksum = "89d8b097288a2021b2c5a26f36c8badccb44817d960668137acd5661be49eafa"
 dependencies = [
- "egui 0.31.1",
+ "egui 0.32.0",
  "egui_commonmark_backend",
  "proc-macro-crate",
  "proc-macro2",
@@ -1096,6 +1096,19 @@ dependencies = [
  "profiling",
  "resvg",
  "syntect",
+]
+
+[[package]]
+name = "egui_extras"
+version = "0.32.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0f791a5937f518249016b276b3639ad2aa3824048b6f2161ec2b431ab325880a"
+dependencies = [
+ "ahash",
+ "egui 0.32.0",
+ "enum-map",
+ "log",
+ "profiling",
 ]
 
 [[package]]
@@ -2783,9 +2796,9 @@ checksum = "afbdc74edc00b6f6a218ca6a5364d6226a259d4b8ea1af4a0ea063f27e179f4d"
 
 [[package]]
 name = "pulldown-cmark"
-version = "0.12.2"
+version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f86ba2052aebccc42cbbb3ed234b8b13ce76f75c3551a303cb2bcffcff12bb14"
+checksum = "1e8bbe1a966bd2f362681a44f6edce3c2310ac21e4d5067a6e7ec396297a6ea0"
 dependencies = [
  "bitflags 2.9.1",
  "memchr",
@@ -3398,7 +3411,7 @@ dependencies = [
  "eframe",
  "egui 0.32.0",
  "egui_commonmark",
- "egui_extras",
+ "egui_extras 0.31.1",
  "glob",
  "home",
  "image",
