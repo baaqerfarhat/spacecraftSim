@@ -110,7 +110,7 @@ class TaskCfg(OrbitalEnvCfg):
         self.scene.imu_robot = _ImuCfg(prim_path="{ENV_REGEX_NS}/robot")
         # Target IMU rate - 200 Hz for high-performance system
         try:
-            self.scene.imu_robot.update_period = 1.0 / 20i0.0
+            self.scene.imu_robot.update_period = 1.0 / 20.0
         except Exception:
             pass
         print("[🛰️ IMU FIX] IMU attached to /robot (with RigidBodyAPI) instead of /robot/base")
