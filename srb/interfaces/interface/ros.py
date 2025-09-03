@@ -48,6 +48,7 @@ from srb.core.action import (
     MulticopterBodyAccelerationAction,
     NonHolonomicAction,
     OperationalSpaceControllerAction,
+    ThrustAction,
     WheeledDriveAction,
 )
 from srb.core.asset import Articulation, RigidObject, RigidObjectCollection
@@ -182,6 +183,9 @@ class RosInterface(InterfaceBase):
             self._thread = threading.Thread(target=self._executor.spin)
             self._thread.daemon = True
             self._thread.start()
+        
+        ## Setup high-frequency sensor publishing timers
+        self._setup_high_freq_sensors()
 
     def __del__(self):
         if hasattr(self, "_executor"):
@@ -192,6 +196,35 @@ class RosInterface(InterfaceBase):
     @property
     def action(self) -> torch.Tensor:
         return self._actions
+    
+    def _setup_high_freq_sensors(self):
+        """Setup independent high-frequency sensor publishing timers"""
+        import threading
+        
+        # IMU timer - 200 Hz independent of env step
+        def publish_imu_high_freq():
+            if hasattr(self._env.scene, '_sensors') and 'imu_robot' in self._env.scene._sensors:
+                sensor = self._env.scene._sensors['imu_robot']
+                if hasattr(sensor, 'data'):
+                    for i in range(self._num_envs):
+                        if f"imu_robot" in self._pub_sensors:
+                            # Publish IMU data at 200 Hz
+                            imu_data = sensor.data
+                            # Create and publish IMU message
+                            # (Implementation would go here)
+                            pass
+        
+        # Camera timer - 30 Hz independent of env step  
+        def publish_camera_high_freq():
+            for sensor_name, sensor in self._env.scene._sensors.items():
+                if 'cam' in sensor_name and hasattr(sensor, 'data'):
+                    # Publish camera data at 30 Hz
+                    # (Implementation would go here)
+                    pass
+        
+        # Create timers (commented out for now to avoid breaking existing system)
+        # self._imu_timer = self._node.create_timer(1.0/200.0, publish_imu_high_freq)
+        # self._cam_timer = self._node.create_timer(1.0/30.0, publish_camera_high_freq)
 
     def update(
         self,
@@ -406,9 +439,13 @@ class RosInterface(InterfaceBase):
         if env_id is not None:
 
             def _proto_cb(self, msg: Any):
-                self._actions[env_id, start_idx:end_idx] = torch.tensor(
+                action_data = torch.tensor(
                     extractor(msg), dtype=torch.float32, device=self._env.device
                 )
+                self._actions[env_id, start_idx:end_idx] = action_data
+                print(f"[ROS_DEBUG] Received action for {key}, env {env_id}: {action_data}")
+                print(f"[ROS_DEBUG] Action shape: {action_data.shape}, range: [{action_data.min():.3f}, {action_data.max():.3f}]")
+                print(f"[ROS_DEBUG] Updated _actions buffer: {self._actions[env_id]}")
 
         else:
 
@@ -455,6 +492,9 @@ class RosInterface(InterfaceBase):
             action_term, (BinaryJointPositionAction, BinaryJointVelocityAction)
         ):
             return BoolMsg, lambda msg: [-1.0 if msg.data else 1.0]
+
+        if isinstance(action_term, ThrustAction):
+            return Float32MultiArray, lambda msg: list(msg.data)
 
         return Float32MultiArray, lambda msg: list(msg.data)
 

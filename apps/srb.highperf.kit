@@ -1,0 +1,119 @@
+[package]
+title = "Space Robotics Bench | High Performance"
+description = "Maximum performance experience for high-end hardware"
+version = "0.0.1"
+keywords = ["benchmark", "robotics", "simulation", "space", "performance"]
+
+
+[dependencies]
+## Minimal essentials only
+"omni.kit.loop" = {}
+"omni.physx.bundle" = {}
+
+## Minimal rendering for cameras only
+"omni.replicator.core" = {}
+
+## Inheritance
+"srb.headless" = {}
+
+
+[settings]
+## Extensions
+app.exts.folders = [
+    "${app}",
+    "${exe-path}/exts",
+    "${exe-path}/extscore",
+    "${exe-path}/../exts",
+    "${exe-path}/../extscache",
+    "${exe-path}/../extsPhysics",
+    "${exe-path}/../isaacsim/exts",
+    "${exe-path}/../isaacsim/extscache",
+    "${exe-path}/../isaacsim/extsPhysics",
+]
+
+## High-Performance Rendering
+app.asyncRendering = true
+app.asyncRenderingLowLatency = true
+app.hydraEngine.waitIdle = false
+app.renderer.skipWhileMinimized = true
+app.renderer.sleepMsOnFocus = 0
+app.renderer.sleepMsOutOfFocus = 0
+app.renderer.waitIdle = false
+app.updateOrder.checkForHydraRenderComplete = 0
+app.vsync = false
+omni.replicator.asyncRendering = true
+renderer.multiGpu.enabled = true
+renderer.multiGpu.maxGpuCount = 2
+
+## ULTRA AGGRESSIVE Thread Settings - MAXIMUM PERFORMANCE
+app.runLoops.main.rateLimitEnabled = false
+app.runLoops.main.rateLimitFrequency = 2000
+app.runLoops.main.rateLimitUsePrecisionSleep = false
+app.runLoops.main.syncToPresent = false
+app.runLoops.present.rateLimitEnabled = false
+app.runLoops.present.rateLimitFrequency = 2000
+app.runLoops.present.rateLimitUsePrecisionSleep = false
+app.runLoops.rendering_0.rateLimitEnabled = false
+app.runLoops.rendering_0.rateLimitFrequency = 2000
+app.runLoops.rendering_0.rateLimitUsePrecisionSleep = false
+app.runLoops.rendering_0.syncToPresent = false
+app.runLoops.rendering_1.rateLimitEnabled = false
+app.runLoops.rendering_1.rateLimitFrequency = 2000
+app.runLoops.rendering_1.rateLimitUsePrecisionSleep = false
+app.runLoops.rendering_1.syncToPresent = false
+app.runLoopsGlobal.syncToPresent = false
+
+## High-Performance Physics - Minimal Updates Only
+physics.autoPopupSimulationOutputWindow = false
+physics.fabricUpdateForceSensors = true
+physics.fabricUpdateJointStates = false
+physics.fabricUpdateTransformations = true
+physics.fabricUpdateVelocities = false
+physics.outputVelocitiesLocalSpace = false
+physics.updateForceSensorsToUsd = false
+physics.updateParticlesToUsd = false
+physics.updateToUsd = false
+physics.updateVelocitiesToUsd = false
+physics.useFastCache = true
+physics.visualizationDisplayJoints = false
+physics.visualizationSimulationOutput = false
+
+## Force GPU Physics
+physics.physxGpu = true
+physics.physxGpuMaxRigids = 1000000
+physics.physxGpuFoundLostAggregate = true
+
+## Minimal Rendering for Cameras Only
+isaaclab.cameras_enabled = true
+rtx.raytracing.cached.enabled = false
+rtx.raytracing.lightcache.spatialCache.enabled = false
+rtx.descriptorSets = 50000
+rtx.hydra.enableSemanticSchema = false
+rtx.mdltranslator.mdlDistilling = false
+rtx.newDenoiser.enabled = false
+rtx.pathtracing.optixDenoiser.enabled = false
+rtx.post.aa.op = 0  # Disable anti-aliasing for performance
+
+## Audio
+app.audio.enabled = false
+
+## Memory and Performance
+app.settings.fabricDefaultStageFrameHistoryCount = 1
+app.vulkan = true
+
+## Disable Heavy Extensions
+exts."omni.replicator.core".Orchestrator.enabled = false
+exts."omni.kit.renderer.core".present.enabled = false
+exts."omni.kit.renderer.core".present.presentAfterRendering = false
+
+## Asset path
+persistent.isaac.asset_root.cloud = "http://omniverse-content-production.s3-us-west-2.amazonaws.com/Assets/Isaac/4.5"
+
+app.settings.persistent = true
+[settings.persistent]
+## Stage
+app.primCreation.DefaultXformOpOrder = "xformOp:translate, xformOp:orient, xformOp:scale"
+app.primCreation.DefaultXformOpType = "Scale, Orient, Translate"
+app.primCreation.typedDefaults.camera.clippingRange = [0.01, 10000000.0]
+app.stage.instanceableOnCreatingReference = false
+app.stage.materialStrength = "weakerThanDescendants"

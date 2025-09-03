@@ -113,6 +113,11 @@ class DirectEnv(__DirectRLEnv, metaclass=__PostInitCaller):
 
     def _pre_physics_step(self, actions: torch.Tensor):
         if self.cfg.actions:
+            # Debug: Print actions received by environment
+            action_sum = actions.sum().item() if actions.numel() > 0 else 0.0
+            if action_sum > 0.01:
+                print(f"[ENV_DEBUG] _pre_physics_step received actions: {actions}")
+                print(f"[ENV_DEBUG] Action sum: {action_sum:.3f}")
             self.action_manager.process_action(actions)
         else:
             super()._pre_physics_step(actions)  # type: ignore

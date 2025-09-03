@@ -1,0 +1,1 @@
+/root/ws/build/ov_data/ament_cmake_environment_hooks/local_setup.bash

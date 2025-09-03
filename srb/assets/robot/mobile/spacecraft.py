@@ -8,7 +8,7 @@ from srb.core.action import (
     ThrustActionGroup,
     ThrusterCfg,
 )
-from srb.core.asset import Frame, OrbitalRobot, RigidObjectCfg, Transform
+from srb.core.asset import Frame, OrbitalRobot, RigidObjectCfg, Transform, AssetRegistry
 from srb.core.sim import (
     CollisionPropertiesCfg,
     MassPropertiesCfg,
@@ -190,97 +190,53 @@ class VenusExpress(OrbitalRobot):
         ThrustActionCfg(
             asset_name="robot",
             thrusters=(
-                # Gimbaled (1)
+                # +X side (right)
                 ThrusterCfg(
-                    offset=(0.0, 0.0, -1.15),
-                    direction=(0.0, 0.0, -1.0),
-                    power=20000.0,
-                    gimbal_limits=(deg_to_rad(20.0), deg_to_rad(20.0)),
-                ),
-                # Fixed (16, although the real spacecraft has 8)
-                ThrusterCfg(
-                    offset=(-0.8085, -0.693, -1.45),
-                    direction=(0.0, 0.0, -1.0),
+                    offset=(1.0, 0.25, 0.0),
+                    direction=(1.0, 0.0, 0.0),
                     power=2000.0,
                 ),
                 ThrusterCfg(
-                    offset=(-0.86, -0.746, -1.45),
-                    direction=(0.0, 0.0, -1.0),
+                    offset=(1.0, -0.25, 0.0),
+                    direction=(1.0, 0.0, 0.0),
+                    power=2000.0,
+                ),
+                # -X side (left)
+                ThrusterCfg(
+                    offset=(-1.0, 0.25, 0.0),
+                    direction=(-1.0, 0.0, 0.0),
                     power=2000.0,
                 ),
                 ThrusterCfg(
-                    offset=(-0.8085, 0.693, -1.45),
-                    direction=(0.0, 0.0, -1.0),
+                    offset=(-1.0, -0.25, 0.0),
+                    direction=(-1.0, 0.0, 0.0),
+                    power=2000.0,
+                ),
+                # +Y side (front)
+                ThrusterCfg(
+                    offset=(0.25, 1.0, 0.0),
+                    direction=(0.0, 1.0, 0.0),
                     power=2000.0,
                 ),
                 ThrusterCfg(
-                    offset=(-0.86, 0.746, -1.45),
-                    direction=(0.0, 0.0, -1.0),
+                    offset=(-0.25, 1.0, 0.0),
+                    direction=(0.0, 1.0, 0.0),
+                    power=2000.0,
+                ),
+                # -Y side (back)
+                ThrusterCfg(
+                    offset=(0.25, -1.0, 0.0),
+                    direction=(-1.0, 0.0, 0.0),
                     power=2000.0,
                 ),
                 ThrusterCfg(
-                    offset=(0.8085, -0.693, -1.45),
-                    direction=(0.0, 0.0, -1.0),
-                    power=2000.0,
-                ),
-                ThrusterCfg(
-                    offset=(0.86, -0.746, -1.45),
-                    direction=(0.0, 0.0, -1.0),
-                    power=2000.0,
-                ),
-                ThrusterCfg(
-                    offset=(0.8085, 0.693, -1.45),
-                    direction=(0.0, 0.0, -1.0),
-                    power=2000.0,
-                ),
-                ThrusterCfg(
-                    offset=(0.86, 0.746, -1.45),
-                    direction=(0.0, 0.0, -1.0),
-                    power=2000.0,
-                ),
-                ThrusterCfg(
-                    offset=(-0.8085, -0.693, 0.425),
-                    direction=(0.0, 0.0, 1.0),
-                    power=2000.0,
-                ),
-                ThrusterCfg(
-                    offset=(-0.86, -0.746, 0.425),
-                    direction=(0.0, 0.0, 1.0),
-                    power=2000.0,
-                ),
-                ThrusterCfg(
-                    offset=(-0.8085, 0.693, 0.425),
-                    direction=(0.0, 0.0, 1.0),
-                    power=2000.0,
-                ),
-                ThrusterCfg(
-                    offset=(-0.86, 0.746, 0.425),
-                    direction=(0.0, 0.0, 1.0),
-                    power=2000.0,
-                ),
-                ThrusterCfg(
-                    offset=(0.8085, -0.693, 0.425),
-                    direction=(0.0, 0.0, 1.0),
-                    power=2000.0,
-                ),
-                ThrusterCfg(
-                    offset=(0.86, -0.746, 0.425),
-                    direction=(0.0, 0.0, 1.0),
-                    power=2000.0,
-                ),
-                ThrusterCfg(
-                    offset=(0.8085, 0.693, 0.425),
-                    direction=(0.0, 0.0, 1.0),
-                    power=2000.0,
-                ),
-                ThrusterCfg(
-                    offset=(0.86, 0.746, 0.425),
-                    direction=(0.0, 0.0, 1.0),
+                    offset=(-0.25, -1.0, 0.0),
+                    direction=(-1.0, 0.0, 0.0),
                     power=2000.0,
                 ),
             ),
             fuel_capacity=2500.0,
-            fuel_consumption_rate=(2500.0 / (1 * 20000.0 + (16 * 2000.0))) / 20.0,
+            fuel_consumption_rate=(2500.0 / (8 * 2000.0)) / 20.0,
         )
     )
 
@@ -304,12 +260,6 @@ class VenusExpress(OrbitalRobot):
         prim_relpath="base/camera_onboard",
         offset=Transform(
             pos=(1.0, 1.0, 2.0),
-            # Camera faces asteroid at (-100, 0, 0) from (1, 1, 2):
-            # Direction vector = (-101, -1, -2),
-            # For arbitrary positions, use rpy_to_quat(yaw, pitch, roll) to align +X with (asteroid_pos - camera_pos)
-            # For your setup, rpy_to_quat(90, 0, 0) works to face the asteroid
-            # Set orientation so UI shows (90, 0, 0) for the onboard camera
-            # rpy_to_quat(90, 0, 0) gives -180, -90, 0 in UI, so try rpy_to_quat(0, 0, 90)
             rot=rpy_to_quat(0.0, 0.0, 90.0),
         ),
     )
@@ -602,3 +552,107 @@ class SuperHeavy(OrbitalRobot):
             rot=rpy_to_quat(0.0, 90.0, 0.0),
         ),
     )
+
+
+class LabSc(OrbitalRobot):
+    ## Model
+    asset_cfg: RigidObjectCfg = RigidObjectCfg(
+        prim_path="{ENV_REGEX_NS}/robot",
+        spawn=UsdFileCfg(
+            usd_path=SRB_ASSETS_DIR_SRB_ROBOT.joinpath("spacecraft")
+            .joinpath("untitled.usd")
+            .as_posix(),
+            scale=(0.1, 0.1, 0.1),  # Scale down to 10% of original size
+            activate_contact_sensors=True,
+            collision_props=CollisionPropertiesCfg(),
+            mesh_collision_props=MeshCollisionPropertiesCfg(
+                mesh_approximation="convexDecomposition"
+            ),
+            rigid_props=RigidBodyPropertiesCfg(
+                max_depenetration_velocity=5.0,
+            ),
+            mass_props=MassPropertiesCfg(density=1000.0),  # 1000x density to compensate for 0.1³ = 0.001 volume scaling
+        ),
+        init_state=RigidObjectCfg.InitialStateCfg(
+            pos=(0.0, 0.0, 0.0),  # At origin
+            rot=(0.0, 0.0, 0.0, 1.0),  # identity (no unintended roll)
+            lin_vel=(0.0, 0.0, 0.0),  # No initial velocity
+            ang_vel=(0.0, 0.0, 0.0),  # No initial angular velocity
+        ),
+    )
+
+    ## Actions
+    actions: ActionGroup = ThrustActionGroup(
+        ThrustActionCfg(
+            asset_name="robot",
+            # Main propulsion thrusters (reduced power for precise control)
+            thrusters=(
+                # Main X-axis thrusters (reduced from 2000N to 100N)
+                ThrusterCfg(offset=(1.0, 0.25, 0.0), direction=(1.0, 0.0, 0.0), power=100.0),
+                ThrusterCfg(offset=(1.0, -0.25, 0.0), direction=(1.0, 0.0, 0.0), power=100.0),
+                ThrusterCfg(offset=(-1.0, 0.25, 0.0), direction=(-1.0, 0.0, 0.0), power=100.0),
+                ThrusterCfg(offset=(-1.0, -0.25, 0.0), direction=(-1.0, 0.0, 0.0), power=100.0),
+                
+                # Main Y-axis thrusters (reduced from 2000N to 100N)
+                ThrusterCfg(offset=(0.25, 1.0, 0.0), direction=(0.0, 1.0, 0.0), power=100.0),
+                ThrusterCfg(offset=(-0.25, 1.0, 0.0), direction=(0.0, 1.0, 0.0), power=100.0),
+                ThrusterCfg(offset=(0.25, -1.0, 0.0), direction=(0.0, -1.0, 0.0), power=100.0),
+                ThrusterCfg(offset=(-0.25, -1.0, 0.0), direction=(0.0, -1.0, 0.0), power=100.0),
+                
+                # Attitude control thrusters (new - for roll/pitch/yaw control)
+                ThrusterCfg(offset=(0.0, 0.0, 0.5), direction=(0.0, 0.0, 1.0), power=20.0),   # Roll control (+Z)
+                ThrusterCfg(offset=(0.0, 0.0, -0.5), direction=(0.0, 0.0, -1.0), power=20.0),  # Roll control (-Z)
+                ThrusterCfg(offset=(0.5, 0.0, 0.0), direction=(1.0, 0.0, 0.0), power=20.0),   # Pitch control (+X)
+                ThrusterCfg(offset=(-0.5, 0.0, 0.0), direction=(-1.0, 0.0, 0.0), power=20.0), # Pitch control (-X)
+                ThrusterCfg(offset=(0.0, 0.5, 0.0), direction=(0.0, 1.0, 0.0), power=20.0),   # Yaw control (+Y)
+                ThrusterCfg(offset=(0.0, -0.5, 0.0), direction=(0.0, -1.0, 0.0), power=20.0), # Yaw control (-Y)
+            ),
+            fuel_capacity=1.0,
+            fuel_consumption_rate=0.0,
+            # Enable attitude control features
+            planar_lock=True,        # Keep Z motion minimal
+            lock_roll_pitch=False,   # Allow roll/pitch control via thrusters
+            lock_yaw=False,          # Allow yaw control via thrusters
+            level_body=False,        # Don't force orientation
+            control_xy=False,        # Direct thruster control (not Fx,Fy commands)
+        )
+    )
+
+    ## Frames
+    frame_base: Frame = Frame(prim_relpath="base")
+    frame_payload_mount: Frame = Frame(
+        prim_relpath="base",
+        offset=Transform(
+            pos=(0.0, 0.0, 0.0),
+            rot=rpy_to_quat(0.0, 0.0, 0.0),
+        ),
+    )
+    frame_manipulator_mount: Frame = Frame(
+        prim_relpath="base",
+        offset=Transform(
+            pos=(0.0, 0.0, 0.0),
+            rot=rpy_to_quat(0.0, 0.0, 0.0),
+        ),
+    )
+    frame_onboard_camera: Frame = Frame(
+        prim_relpath="base",
+        offset=Transform(
+            pos=(0.0, 0.0, 0.0),  # Camera at robot center
+            rot=rpy_to_quat(0.0, 0.0, 90.0),  # Test: yaw=90° to see what Isaac Sim Orient XYZ shows
+        ),
+    )
+    frame_onboard_imu: Frame = Frame(
+        prim_relpath="base",
+        offset=Transform(
+            pos=(0.0, 0.0, 1.0),
+            rot=rpy_to_quat(0.0, 0.0, 0.0),
+        ),
+    )
+    frame_imu: Frame = Frame(
+        prim_relpath="base",
+        offset=Transform(
+            pos=(0.0, 0.0, 1.0),
+            rot=rpy_to_quat(0.0, 0.0, 0.0),
+        ),
+    )
+

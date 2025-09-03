@@ -19,6 +19,7 @@ from .spacecraft import (  # noqa: F401
     Starship,
     SuperHeavy,
     VenusExpress,
+    LabSc,
 )
 from .spot import Spot  # noqa: F401
 from .unitree import (  # noqa: F401

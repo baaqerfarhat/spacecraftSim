@@ -2,6 +2,7 @@ from dataclasses import MISSING
 from typing import Sequence, Tuple
 
 import torch
+import numpy as np
 
 from srb._typing.step_return import StepReturn
 from srb.core.action import ThrustAction
@@ -12,11 +13,21 @@ from srb.core.marker import VisualizationMarkers, VisualizationMarkersCfg
 from srb.core.mdp import reset_collection_root_state_uniform_poisson_disk_3d
 from srb.core.sim import PreviewSurfaceCfg, SphereCfg
 from srb.utils.cfg import configclass
-from srb.utils.math import deg_to_rad, matrix_from_quat, rotmat_to_rot6d, quat_from_two_vectors
+from srb.utils.math import (
+    deg_to_rad,
+    matrix_from_quat,
+    rotmat_to_rot6d,
+    quat_from_two_vectors,
+    quat_apply,              #  ← add this
+)
+from srb.core.env.mobile.orbital.visual_ext import (
+    OrbitalEnvVisualExtCfg,
+)
 
 from .asset import select_obstacle
 from srb.core.asset import RigidObjectCfg
 from srb.core.sim import UsdFileCfg
+from srb.core.sensor import Imu, ImuCfg
 
 
 ##############
@@ -26,6 +37,7 @@ from srb.core.sim import UsdFileCfg
 @configclass
 class SceneCfg(OrbitalSceneCfg):
     env_spacing: float = 25.0
+    num_envs: int = 1  # Single environment for maximum performance
 
     ## Assets
     objs: RigidObjectCollectionCfg = RigidObjectCollectionCfg(
@@ -49,33 +61,135 @@ class TaskCfg(OrbitalEnvCfg):
     events: EventCfg = EventCfg()
 
     ## Time
-    episode_length_s: float = 30.0
+    episode_length_s: float = 1e9  # Run for a very long time
     is_finite_horizon: bool = False
+    # Ultra high-performance simulation rates
+    env_rate: float = 1.0 / 500.0    # 500 Hz physics step - push the limits
+    agent_rate: float = 1.0 / 500.0  # 500 Hz agent step (1:1 decimation)
 
+    ## Performance optimizations for high-frequency simulation
+    debug_vis: bool = False  # Disable debug visualization for performance
+    
     ## Debug motion (meters & rad/step). 0 amp => fully static.
     debug_robot_orbit_amp_m: float = 0.0
     debug_robot_orbit_speed_rad: float = 0.0
 
-    ## Target marker (not used for motion, just visualization)
+    ## Target marker (disabled for maximum performance)
     tf_pos_target: Tuple[float, float, float] = (0.0, 0.0, -50.0)
     tf_quat_target: Tuple[float, float, float, float] = (1.0, 0.0, 0.0, 0.0)
-    target_marker_cfg: VisualizationMarkersCfg = VisualizationMarkersCfg(
-        prim_path="/Visuals/target",
-        markers={
-            "target": SphereCfg(
-                radius=0.25,
-                visual_material=PreviewSurfaceCfg(emissive_color=(0.2, 0.2, 0.8)),
-            )
-        },
-    )
+    target_marker_cfg: VisualizationMarkersCfg | None = None  # Disabled for performance
 
     def __post_init__(self):
+        # ULTRA aggressive PhysX optimizations for maximum performance
+        if hasattr(self, 'sim') and hasattr(self.sim, 'physx'):
+            # Minimal solver iterations
+            self.sim.physx.min_position_iteration_count = 1
+            self.sim.physx.min_velocity_iteration_count = 0  # Even more aggressive
+            # Disable ALL expensive features
+            self.sim.physx.enable_ccd = False
+            self.sim.physx.enable_stabilization = False
+            self.sim.physx.bounce_threshold_velocity = 0.0
+            self.sim.physx.friction_offset_threshold = 0.0
+            self.sim.physx.friction_correlation_distance = 0.0
+        
+        # Disable ALL rendering features
+        if hasattr(self, 'sim') and hasattr(self.sim, 'render'):
+            self.sim.render.enable_translucency = False
+            self.sim.render.enable_reflections = False
+        # 🛰️ Use standard robot prim path for proper IMU attachment
+        # Custom prim paths can cause IMU sensor initialization failures
+        # if hasattr(self, 'robot') and hasattr(self.robot, 'asset_cfg'):
+        #     self.robot.asset_cfg.prim_path = "{ENV_REGEX_NS}/lab_sc_robot_unique_20250730"
+
+        # 🛰️ IMU ENABLED - Keep IMU sensor active for real sensor data
+        # if hasattr(self, 'scene') and hasattr(self.scene, 'imu_robot'):
+        #     self.scene.imu_robot = None  # <- This line disabled IMU, now commented out
+        
+        # 🛰️ Ensure IMU sensor configured and pointing to robot root
+        from srb.core.sensor import ImuCfg as _ImuCfg
+        self.scene.imu_robot = _ImuCfg(prim_path="{ENV_REGEX_NS}/robot")
+        # Target IMU rate - 200 Hz for high-performance system
+        try:
+            self.scene.imu_robot.update_period = 1.0 / 20i0.0
+        except Exception:
+            pass
+        print("[🛰️ IMU FIX] IMU attached to /robot (with RigidBodyAPI) instead of /robot/base")
+
+
+        # 📷 Force-enable Isaac Lab cameras via carb settings (CLI may not expose --enable_cameras)
+        try:
+            import carb  # type: ignore
+            settings = carb.settings.get_settings()
+            settings.set("/isaaclab/cameras_enabled", True)
+            settings.set("/isaaclab/cameras_render", True)
+            print("[📷 CAM] Forced cameras_enabled=True in carb settings")
+        except Exception as e:
+            print(f"[📷 CAM] Could not set camera settings via carb: {e}")
+
+        # Completely disable robot randomization - we'll set initial state directly
+        self.events.randomize_robot_state = None
+        
+        # Call the parent's __post_init__ which will set up the robot
         super().__post_init__()
 
-        # Place the Apophis model 100m back along -X
+        # 📷 Onboard camera — 30 FPS, RGB only, small resolution
+        try:
+            _visual_ext = OrbitalEnvVisualExtCfg()
+
+            # rate
+            if hasattr(_visual_ext, "camera_framerate"):
+                _visual_ext.camera_framerate = 30.0
+            if hasattr(_visual_ext, "camera_dt"):
+                _visual_ext.camera_dt = 1.0 / 30.0
+
+            # resolution (keep it small)
+            if hasattr(_visual_ext, "camera_resolution"):
+                _visual_ext.camera_resolution = (64, 64)
+            if hasattr(_visual_ext, "camera_width"):
+                _visual_ext.camera_width = 64
+            if hasattr(_visual_ext, "camera_height"):
+                _visual_ext.camera_height = 64
+
+            # disable depth & pointcloud for now
+            for attr in ("enable_depth", "publish_depth", "depth_enabled"):
+                if hasattr(_visual_ext, attr):
+                    setattr(_visual_ext, attr, False)
+            for attr in ("enable_pointcloud", "publish_pointcloud", "pointcloud_enabled"):
+                if hasattr(_visual_ext, attr):
+                    setattr(_visual_ext, attr, False)
+
+            _visual_ext.wrap(env_cfg=self)
+            print("[📷 CAM] RGB 64x64 @30 FPS (depth/pointcloud OFF)")
+        except Exception as e:
+            print(f"[📷 CAM] Onboard camera configuration failed: {e}")
+
+        # 🛰️ IMU — bind to robot root and run at 200 Hz
+        try:
+            imu_period = 1.0 / 200.0
+            if hasattr(self.scene, 'imu_robot') and self.scene.imu_robot is not None:
+                # self.scene.imu_robot is the *config*; adjust it so builder instantiates correctly
+                self.scene.imu_robot.prim_path = self.scene.robot.prim_path
+                if hasattr(self.scene.imu_robot, "update_period"):
+                    self.scene.imu_robot.update_period = imu_period
+                print("[🛰️ IMU] Config bound to robot root @200 Hz")
+            else:
+                # If no IMU cfg was present, create one now
+                from srb.core.sensor import ImuCfg as _ImuCfg
+                self.scene.imu_robot = _ImuCfg(prim_path=self.scene.robot.prim_path)
+                if hasattr(self.scene.imu_robot, "update_period"):
+                    self.scene.imu_robot.update_period = imu_period
+                print("[🛰️ IMU] Created IMU config @200 Hz")
+        except Exception as e:
+            print(f"[🛰️ IMU] Failed to set 200 Hz IMU config: {e}")
+
+        # (Optional while debugging control) disable auto camera motion baseline
+        # if hasattr(self, 'enable_translational_motion'):
+        #     self.enable_translational_motion = False
+                # Ensure at least one rigid object exists for the collection to initialize
+        # Use a unique prim path to avoid duplicates
         self.scene.objs.rigid_objects = {
             "apophis": RigidObjectCfg(
-                prim_path=f"{{ENV_REGEX_NS}}/apophis",
+                prim_path=f"{{ENV_REGEX_NS}}/apophis_unique",
                 spawn=UsdFileCfg(
                     usd_path="/root/ws/srb/assets/object/apophis_accurate.usdz",
                     scale=(1.0, 1.0, 1.0),
@@ -87,8 +201,15 @@ class TaskCfg(OrbitalEnvCfg):
             )
         }
 
-        # refresh any procedural assets
+        # refresh any procedural assets (safe even with empty object list)
         self._update_procedural_assets()
+        
+        print("[🛰️ IMU ENABLED] Robot spawning completed with IMU sensor!")
+        print(f"[🛰️ IMU ENABLED] Using standard robot prim path for IMU compatibility")
+        print(f"[🛰️ IMU ENABLED] Real IMU data should be published on: /srb/env0/imu_robot")
+        if hasattr(self.robot.asset_cfg, 'init_state') and self.robot.asset_cfg.init_state:
+            print(f"[🛰️ IMU ENABLED] Configured position: {self.robot.asset_cfg.init_state.pos}")
+            print(f"[🛰️ IMU ENABLED] Configured rotation: {self.robot.asset_cfg.init_state.rot}")
 
 
 ############
@@ -99,8 +220,34 @@ class Task(OrbitalEnv):
     cfg: TaskCfg
 
     def __init__(self, cfg: TaskCfg, **kwargs):
+        import numpy as np
         print("[TASK] Initializing regular Task (not VisualTask)...")
         super().__init__(cfg, **kwargs)
+        # Finalize IMU binding: force IMU to attach to the robot root and run at 200 Hz
+        try:
+            imu_target_period = 1.0 / 200.0
+
+            robot_prim = "{ENV_REGEX_NS}/robot"
+            if hasattr(self, "scene") and hasattr(self.scene, "robot") and hasattr(self.scene.robot, "prim_path"):
+                robot_prim = self.scene.robot.prim_path
+
+            if getattr(self, "_imu_robot", None) is not None:
+                if hasattr(self._imu_robot, "cfg"):
+                    self._imu_robot.cfg.prim_path = robot_prim
+                    if hasattr(self._imu_robot.cfg, "update_period"):
+                        self._imu_robot.cfg.update_period = imu_target_period
+                if hasattr(self._imu_robot, "update_period"):
+                    self._imu_robot.update_period = imu_target_period
+                print(f"[🛰️ IMU FIX FINAL] Bound IMU to '{robot_prim}' @200 Hz")
+            else:
+                imu_cfg = ImuCfg(prim_path=robot_prim)
+                if hasattr(imu_cfg, "update_period"):
+                    imu_cfg.update_period = imu_target_period
+                self.scene["imu_robot"] = Imu(imu_cfg)
+                self._imu_robot = self.scene.get("imu_robot")
+                print(f"[🛰️ IMU CREATE] Instantiated IMU at '{robot_prim}' @200 Hz")
+        except Exception as e:
+            print(f"[🛰️ IMU FIX FINAL] Could not rebind/create IMU: {e}")
         self._objs: RigidObjectCollection = self.scene["objs"]
         self._orbit_angle = 0.0
         self._orbit_radius = 150.0  # 75 meters away from Apophis
@@ -108,8 +255,22 @@ class Task(OrbitalEnv):
         self._orbit_angular_speed = 0.0005  # radians per step, slower orbit for easier following
         self._debug_counter = 0  # Counter to control debug print frequency
         self._dbg_phase = 0.0  # Debug motion phase
-        # Restore target marker and pose attributes
-        self._target_marker = VisualizationMarkers(self.cfg.target_marker_cfg)
+        
+        # Initialize PID controller state variables
+        self._prev_pos_error = torch.zeros(3, device=self.device)
+        self._integral_pos_error = torch.zeros(3, device=self.device)
+        self._prev_yaw_error = 0.0
+        self._integral_yaw_error = 0.0
+        
+        # Orbital motion parameters
+        self._orbit_radius_pid = 50.0  # 50m orbit around Apophis for PID controller
+        self._orbit_speed = 0.1   # rad/s orbital velocity
+        self._start_time = None
+        
+        # Restore target marker and pose attributes (skip marker for performance)
+        self._target_marker = None
+        if self.cfg.target_marker_cfg is not None:
+            self._target_marker = VisualizationMarkers(self.cfg.target_marker_cfg)
         self._tf_pos_target = (
             self.scene.env_origins
             + torch.tensor(self.cfg.tf_pos_target, device=self.device)
@@ -117,13 +278,49 @@ class Task(OrbitalEnv):
         self._tf_quat_target = torch.tensor(
             self.cfg.tf_quat_target, device=self.device
         ).repeat(self.num_envs, 1)
-        self._target_marker.visualize(self._tf_pos_target, self._tf_quat_target)
+        
+        print("[🛰️ IMU ENABLED] PID orbital controller initialized")
+        if self._target_marker is not None:
+            self._target_marker.visualize(self._tf_pos_target, self._tf_quat_target)
+        
+        # Check if IMU is actually available
+        if hasattr(self, '_imu_robot') and self._imu_robot is not None:
+            print("✅ [🛰️ IMU ENABLED] IMU sensor is available!")
+            print("📡 [🛰️ IMU ENABLED] Real IMU data will be published on: /srb/env0/imu_robot")
+        else:
+            print("❌ [🛰️ IMU ENABLED] Warning: IMU sensor not found!")
         # Print thruster configuration at startup
         if hasattr(self, 'action_manager') and self.action_manager is not None:
             for term_name, term in self.action_manager._terms.items():
                 if hasattr(term, '_thruster_direction'):
                     print("\n=== Thruster Directions ===\n", term._thruster_direction)
                     print("=== Thruster Powers ===\n", term._thruster_power)
+                if hasattr(term, '_thruster_offset'):
+                    print("=== Thruster Offsets ===\n", term._thruster_offset)
+                if hasattr(term, '_thruster_power'):
+                    print("=== Thruster Powers ===\n", term._thruster_power)
+        # Print spacecraft mass
+        if hasattr(self, '_robot') and hasattr(self._robot, 'mass'):
+            print(f"[DEBUG] Spacecraft mass: {self._robot.mass}")
+            
+        # Debug robot position immediately after creation
+        if hasattr(self, '_robot') and self._robot is not None:
+            print("[DEBUG POST-CREATE] Robot created. Checking actual position...")
+            try:
+                pos = self._robot.data.root_pos_w[0].cpu().numpy()
+                quat = self._robot.data.root_quat_w[0].cpu().numpy()
+                print(f"[DEBUG POST-CREATE] Actual robot position: ({pos[0]:.3f}, {pos[1]:.3f}, {pos[2]:.3f})")
+                print(f"[DEBUG POST-CREATE] Actual robot quaternion: ({quat[0]:.3f}, {quat[1]:.3f}, {quat[2]:.3f}, {quat[3]:.3f}) [w,x,y,z]")
+                
+                # Convert to Euler for easier reading
+                import numpy as np
+                from scipy.spatial.transform import Rotation as R
+                r = R.from_quat([quat[1], quat[2], quat[3], quat[0]])  # scipy expects x,y,z,w
+                euler = r.as_euler('xyz', degrees=True)
+                print(f"[DEBUG POST-CREATE] Actual robot rotation: ({euler[0]:.1f}°, {euler[1]:.1f}°, {euler[2]:.1f}°) [X,Y,Z]")
+            except Exception as e:
+                print(f"[DEBUG POST-CREATE] Could not read robot position: {e}")
+        
         # Remove spacecraft marker
 
     def _reset_idx(self, env_ids: Sequence[int]):
@@ -164,6 +361,10 @@ class Task(OrbitalEnv):
 
     def extract_step_return(self) -> StepReturn:
         # unchanged reward/obs logic
+        # [DEBUG] Applied camera jitter: 0.001 rad
+        # if hasattr(self, '_debug_cam_jitter_rad') and self._debug_cam_jitter_rad > 0.0:
+        #     # Apply camera jitter here if needed in the future
+        #     pass
         if self._thrust_action_term_key:
             thrust_action_term: ThrustAction = self.action_manager._terms[
                 self._thrust_action_term_key  # type: ignore
@@ -175,6 +376,20 @@ class Task(OrbitalEnv):
         else:
             remaining_fuel = None
 
+        # 🛰️ Get real IMU data from Isaac Sim sensor
+        if self._imu_robot is not None:
+            imu_lin_acc = self._imu_robot.data.lin_acc_b
+            imu_ang_vel = self._imu_robot.data.ang_vel_b
+            
+            # Debug: Print IMU data every 1000 steps (minimal overhead)
+            if hasattr(self, '_debug_counter') and self._debug_counter % 1000 == 0:
+                print(f"[🛰️ IMU DATA] Step {self._debug_counter}: Accel={imu_lin_acc[0].cpu().numpy()}")
+                print(f"[🛰️ IMU DATA] Step {self._debug_counter}: Angular={imu_ang_vel[0].cpu().numpy()}")
+        else:
+            # Fallback to zeros if IMU not available (silent)
+            imu_lin_acc = torch.zeros(1, 3, device=self.device)
+            imu_ang_vel = torch.zeros(1, 3, device=self.device)
+        
         return _compute_step_return(
             episode_length=self.episode_length_buf,
             max_episode_length=self.max_episode_length,
@@ -187,106 +402,38 @@ class Task(OrbitalEnv):
             vel_ang_robot=self._robot.data.root_ang_vel_b,
             tf_pos_objs=self._objs.data.object_com_pos_w,
             tf_pos_target=self._tf_pos_target,
-            imu_lin_acc=self._imu_robot.data.lin_acc_b,
-            imu_ang_vel=self._imu_robot.data.ang_vel_b,
+            imu_lin_acc=imu_lin_acc,
+            imu_ang_vel=imu_ang_vel,
             remaining_fuel=remaining_fuel,
         )
 
 
-    # NEW – run *before* the physics integrator each frame
-    def _pre_physics_step(self, action: torch.Tensor | None):
-        self._orbit_angle += self._orbit_angular_speed
-        desired_pos = self._orbit_center.clone()
-        desired_pos[0] += self._orbit_radius * torch.cos(torch.tensor(self._orbit_angle, device=self.device))
-        desired_pos[1] += self._orbit_radius * torch.sin(torch.tensor(self._orbit_angle, device=self.device))
-        # desired_pos[2] = Z fixed to match Apophis (0.0)
-        current_pos = self._robot.data.root_pos_w[0]
-        current_vel = self._robot.data.root_lin_vel_w[0]
-        current_quat = self._robot.data.root_quat_w[0]
-        current_ang_vel = self._robot.data.root_ang_vel_w[0]
-        
-        # Much more aggressive gains for orbital motion
-        kp_pos = 0.5  # Increased significantly
-        kd_pos = 0.8  # Increased significantly
-        pos_error = desired_pos - current_pos
-        vel_error = -current_vel
-        desired_acc = kp_pos * pos_error + kd_pos * vel_error
-        # CRITICAL: Clamp Z control - spacecraft should NEVER move in Z axis
-        desired_acc[2] = 0.0
-        
-        # XY-ONLY APPROACH: Use XY thrusters for XY motion, no Z movement
-        xy_magnitude = torch.norm(desired_acc[:2])
-        
-        if xy_magnitude > 0.01:
-            # Calculate the angle to point thrusters in the desired direction
-            desired_direction = desired_acc[:2] / xy_magnitude
-            
-            # Calculate the angle to rotate around Z-axis to point in desired direction
-            angle_to_rotate = torch.atan2(desired_direction[1], desired_direction[0])
-            
-            # Create desired angular acceleration for Z rotation (yaw)
-            kp_yaw = 2.0  # Strong gain for Z rotation
-            kd_yaw = 0.5  # Damping for Z rotation
-            
-            # Calculate current yaw angle from quaternion
-            current_yaw = 2 * torch.atan2(current_quat[3], current_quat[0])
-            
-            # Calculate yaw error
-            yaw_error = angle_to_rotate - current_yaw
-            
-            # Normalize yaw error to [-pi, pi]
-            while yaw_error > torch.pi:
-                yaw_error -= 2 * torch.pi
-            while yaw_error < -torch.pi:
-                yaw_error += 2 * torch.pi
-            
-            # Set desired angular acceleration for Z rotation
-            desired_ang_acc = torch.zeros(3, device=self.device)
-            desired_ang_acc[2] = kp_yaw * yaw_error + kd_yaw * (-current_ang_vel[2])
-        else:
-            # If no X/Y movement needed, just maintain current orientation
-            desired_ang_acc = torch.zeros(3, device=self.device)
-        
-        # **STATIC SPACECRAFT**: Set all actions to zero to keep spacecraft completely static
-        if hasattr(self, 'action_manager') and self.action_manager is not None:
-            action_dim = self.action_manager.action.shape[1]
-            action_out = torch.zeros((self.num_envs, action_dim), device=self.device)
-            
-            # Set all actions to zero - no movement at all
-            self.action_manager.action.copy_(action_out)
-            self.action_manager.process_action(self.action_manager.action)
 
-        # **DEBUG MOTION**: Apply tiny orbital wiggle if requested
-        amp = getattr(self.cfg, "debug_robot_orbit_amp_m", 0.0)
-        spd = getattr(self.cfg, "debug_robot_orbit_speed_rad", 0.0)
 
-        if amp > 0.0 and spd != 0.0:
-            self._dbg_phase += spd
-            dx = amp * torch.cos(torch.tensor(self._dbg_phase, device=self.device))
-            dy = amp * torch.sin(torch.tensor(self._dbg_phase, device=self.device))
-            # Use current robot position as base, add tiny orbital motion
-            base_pos = self._robot.data.root_pos_w[0].clone()
-            pos_robot = base_pos + torch.tensor([dx, dy, 0.0], device=self.device)
-            # Apply the debug motion to the robot
-            self._robot.data.root_pos_w[0] = pos_robot
-        
-        # **DISABLED ORBIT DEBUG OUTPUT** - Commented out to reduce noise
-        # self._debug_counter += 1
-        # if self._debug_counter % 50 == 0:
-        #     print(f"[ORBIT] Step {self._debug_counter}: angle={self._orbit_angle:.3f}, pos_error_xy={torch.norm(pos_error[:2]):.2f}, xy_mag={xy_magnitude:.3f}")
-        #     print(f"[ORBIT] Desired: {desired_pos[:2].cpu().numpy()}, Current: {current_pos[:2].cpu().numpy()}")
-        #     print(f"[ORBIT] Z-pos: {current_pos[2].cpu().numpy():.3f} (should stay ~0)")
-        #     print(f"[ORBIT] XY Action: {action_out[0, :5].cpu().numpy()}")
-        #     print("---")
-
-        # Freeze velocities every tick so PhysX can't drift us
-        self._robot.data.root_lin_vel_b[:] = 0.0
-        self._robot.data.root_ang_vel_b[:] = 0.0
-        self._objs.data.object_lin_vel_b[:] = 0.0
-        self._objs.data.object_ang_vel_b[:] = 0.0
+    # Removed _pre_physics_step override to allow ROS action processing
+    # Actions are now handled by the parent DirectEnv._pre_physics_step method
 
     def _post_physics_step(self):
-        pass
+        # Debug logging to track robot position and orientation
+        if not hasattr(self, '_debug_counter'):
+            self._debug_counter = 0
+            
+        self._debug_counter += 1
+        
+        # Log position and orientation very rarely
+        if (self._debug_counter % 2000) == 0:
+            pos = self._robot.data.root_pos_w[0].cpu().numpy()
+            quat = self._robot.data.root_quat_w[0].cpu().numpy()  # w, x, y, z
+            
+            # Convert quaternion to Euler angles for easier reading
+            import numpy as np
+            from scipy.spatial.transform import Rotation as R
+            r = R.from_quat([quat[1], quat[2], quat[3], quat[0]])  # scipy expects x,y,z,w
+            euler = r.as_euler('xyz', degrees=True)
+            
+            print(f"[DEBUG Step {self._debug_counter}] Robot pos: ({pos[0]:.3f}, {pos[1]:.3f}, {pos[2]:.3f})")
+            print(f"[DEBUG Step {self._debug_counter}] Robot rot: ({euler[0]:.1f}°, {euler[1]:.1f}°, {euler[2]:.1f}°) [X,Y,Z]")
+            print(f"[DEBUG Step {self._debug_counter}] Robot quat: ({quat[0]:.3f}, {quat[1]:.3f}, {quat[2]:.3f}, {quat[3]:.3f}) [w,x,y,z]")
 
 
 

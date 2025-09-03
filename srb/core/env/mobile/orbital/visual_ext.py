@@ -9,6 +9,9 @@ from .env import OrbitalEnvCfg
 @configclass
 class OrbitalEnvVisualExtCfg(VisualExtCfg):
     def wrap(self, env_cfg: OrbitalEnvCfg):
+        # Get the actual robot prim path from the robot's asset config
+        robot_prim_path = env_cfg._robot.asset_cfg.prim_path
+        
         self.cameras_cfg = {
             # "cam_scene": CameraCfg(
             #     prim_path=f"{env_cfg._robot.asset_cfg.prim_path}{('/' + env_cfg._robot.frame_base.prim_relpath) if env_cfg._robot.frame_base.prim_relpath else ''}/camera_scene",
@@ -22,7 +25,11 @@ class OrbitalEnvVisualExtCfg(VisualExtCfg):
             #     ),
             # ),
             "cam_onboard": CameraCfg(
-                prim_path=f"{env_cfg._robot.asset_cfg.prim_path}/{env_cfg._robot.frame_onboard_camera.prim_relpath}",
+                prim_path=f"{robot_prim_path}/camera_onboard_unique",
+                update_period=1.0 / 50.0,  # 50 Hz camera rate - higher performance
+                width=32,  # Even smaller resolution for maximum speed
+                height=32,
+                data_types=("rgb",),  # RGB only
                 offset=CameraCfg.OffsetCfg(
                     convention="world",
                     pos=env_cfg._robot.frame_onboard_camera.offset.pos,

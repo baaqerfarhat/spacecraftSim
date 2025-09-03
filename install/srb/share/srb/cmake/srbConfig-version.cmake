@@ -1,0 +1,1 @@
+/root/ws/build/srb/ament_cmake_core/srbConfig-version.cmake

@@ -1,0 +1,1 @@
+/root/ws/build/ov_core/ament_cmake_core/ov_coreConfig-version.cmake

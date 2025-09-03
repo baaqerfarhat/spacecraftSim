@@ -1,0 +1,1 @@
+rclcpp;cv_bridge;ov_core;eigen;libopencv-dev;libopencv-contrib-dev;boost;libceres-dev

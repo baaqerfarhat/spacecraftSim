@@ -77,9 +77,14 @@ def run_agent_with_env(
 
     # Preprocess kwargs
     kwargs["enable_cameras"] = video_enable or env_id.endswith("_visual")
-    kwargs["experience"] = SRB_APPS_DIR.joinpath(
-        f"srb.{'headless.' if kwargs['headless'] else ''}{'rendering.' if video_enable or kwargs['enable_cameras'] else ''}kit"
-    )
+    
+    # Use high-performance kit for orbital_evasion_visual
+    if env_id == "orbital_evasion_visual" and kwargs.get('headless', True):
+        kwargs["experience"] = SRB_APPS_DIR.joinpath("srb.highperf.kit")
+    else:
+        kwargs["experience"] = SRB_APPS_DIR.joinpath(
+            f"srb.{'headless.' if kwargs['headless'] else ''}{'rendering.' if video_enable or kwargs['enable_cameras'] else ''}kit"
+        )
 
     # Launch Isaac Sim
     launcher = AppLauncher(launcher_args=kwargs)
@@ -447,7 +452,7 @@ def zero_agent(
     print("[ZERO_AGENT] Starting zero agent...")
     print(f"[ZERO_AGENT] sim_app.is_running() = {sim_app.is_running()}")
     print(f"[ZERO_AGENT] env.action_space.shape = {env.action_space.shape}")
-    
+
     action = torch.zeros(env.action_space.shape, device=env.unwrapped.device)  # type: ignore
     print(f"[ZERO_AGENT] Created zero action tensor: {action.shape}")
 
@@ -459,11 +464,9 @@ def zero_agent(
             observation, reward, terminated, truncated, info = env.step(action)
             print(f"[ZERO_AGENT] Step {step_count}: env.step() completed")
             step_count += 1
-            
-            if step_count > 10:  # Limit debug output
-                print(f"[ZERO_AGENT] Step {step_count}: continuing...")
-                break
-                
+            # if step_count > 10:  # Limit debug output
+            #     print(f"[ZERO_AGENT] Step {step_count}: continuing...")
+            #     break
             logging.trace(
                 f"action: {action}\n"
                 f"observation: {observation}\n"
@@ -472,7 +475,7 @@ def zero_agent(
                 f"truncated: {truncated}\n"
                 f"info: {info}\n"
             )
-    
+
     print("[ZERO_AGENT] Simulation loop ended")
 
 
@@ -923,7 +926,24 @@ def ros_agent(
     with torch.inference_mode():
         while sim_app.is_running():
             action = ros_interface.action
-            observation, reward, terminated, truncated, info = env.step(action)  # type: ignore
+            # Debug: Print action being sent to environment
+            action_sum = action.sum().item() if action.numel() > 0 else 0.0
+            if action_sum > 0.01:
+                print(f"[MAIN_DEBUG] Sending action to env.step(): {action}")
+                print(f"[MAIN_DEBUG] Action sum: {action_sum:.3f}")
+            # Debug: Check if env has the expected step method
+            if action_sum > 0.01:
+                print(f"[MAIN_DEBUG] Environment type: {type(env)}")
+                print(f"[MAIN_DEBUG] Unwrapped environment type: {type(env.unwrapped)}")
+                print(f"[MAIN_DEBUG] Environment has _pre_physics_step: {hasattr(env, '_pre_physics_step')}")
+                print(f"[MAIN_DEBUG] Unwrapped has _pre_physics_step: {hasattr(env.unwrapped, '_pre_physics_step')}")
+            
+            # CRITICAL FIX: Gymnasium OrderEnforcing wrapper doesn't forward to _pre_physics_step
+            # For ROS agent, call the unwrapped environment directly to ensure proper action processing
+            observation, reward, terminated, truncated, info = env.unwrapped.step(action)
+            
+            # Clear actions after use to prevent latching (optional)
+            # ros_interface._actions.zero_()  # type: ignore
             logging.trace(
                 f"action: {action}\n"
                 f"observation: {observation}\n"
